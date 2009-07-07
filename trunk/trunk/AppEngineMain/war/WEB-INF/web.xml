@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+  
+   <filter>
+        <filter-name>LoginFilter</filter-name>
+        <description>
+            This filter times the execution of the request after
+            the filter itself, and prints the execution time to
+            the standard output.
+        </description>
+        <filter-class>moten.david.util.google.app.engine.filter.LoginFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>LoginFilter</filter-name>
+        <url-pattern>/mytime/*</url-pattern>
+    </filter-mapping>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>wordProviderService</servlet-name>
+    <servlet-class>moten.david.words.nines.server.WordProviderServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>myTimeService</servlet-name>
+    <servlet-class>moten.david.time.mytime.server.ApplicationServiceImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>nines</servlet-name>
+    <jsp-file>/nines.jsp</jsp-file>
+  </servlet>
+
+  <servlet>
+    <servlet-name>mytime</servlet-name>
+    <jsp-file>/mytime.jsp</jsp-file>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>myTimeService</servlet-name>
+    <url-pattern>/mytime/service</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>wordProviderService</servlet-name>
+    <url-pattern>/nines/service</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>nines</servlet-name>
+    <url-pattern>/nines</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>mytime</servlet-name>
+    <url-pattern>/mytime</url-pattern>
+  </servlet-mapping>
+
+</web-app>
