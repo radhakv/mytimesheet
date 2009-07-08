@@ -17,6 +17,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -113,6 +114,8 @@ public class ApplicationClient implements EntryPoint {
 		menuPanel.add(reportButton);
 		menuPanel.add(importButton);
 		menuPanel.add(exportButton);
+
+		menuPanel.add(new Anchor("logout", "mytime?logout=true"));
 
 		exportText.setVisible(false);
 		bodyPanel.add(menuPanel);
