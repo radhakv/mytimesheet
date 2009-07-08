@@ -114,8 +114,9 @@ public class ApplicationClient implements EntryPoint {
 		menuPanel.add(reportButton);
 		menuPanel.add(importButton);
 		menuPanel.add(exportButton);
-
-		menuPanel.add(new Anchor("logout", "mytime?logout=true"));
+		Anchor logout = new Anchor("logout", "mytime?logout=true");
+		logout.setStyleName("menuItem");
+		menuPanel.add(logout);
 
 		exportText.setVisible(false);
 		bodyPanel.add(menuPanel);
