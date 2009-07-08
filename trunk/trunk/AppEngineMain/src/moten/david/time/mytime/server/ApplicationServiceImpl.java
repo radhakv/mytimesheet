@@ -46,6 +46,7 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 	public ApplicationServiceImpl() {
 		ApplicationInjector.getInjector().injectMembers(this);
 		userService = UserServiceFactory.getUserService();
+
 	}
 
 	private com.google.appengine.api.users.User getGoogleUser() {

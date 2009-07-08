@@ -27,7 +27,12 @@ public class LoginFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 
 		if (userService.getCurrentUser() != null) {
-			chain.doFilter(request, response);
+			if ("true".equals(request.getParameter("logout")))
+				((HttpServletResponse) response).sendRedirect(userService
+						.createLogoutURL(((HttpServletRequest) request)
+								.getRequestURI()));
+			else
+				chain.doFilter(request, response);
 		} else if (response instanceof HttpServletResponse)
 			((HttpServletResponse) response).sendRedirect(userService
 					.createLoginURL(((HttpServletRequest) request)
