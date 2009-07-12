@@ -266,6 +266,10 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 			BufferedReader br = new BufferedReader(isr);
 			String line;
 			while ((line = br.readLine()) != null) {
+				line = line.trim();
+				while (line.contains("  "))
+					line = line.replace("  ", " ");
+				line = line.replace(" ", "\t");
 				String[] items = line.split("\t");
 				// dd/MM/yy
 				String date = items[0];
