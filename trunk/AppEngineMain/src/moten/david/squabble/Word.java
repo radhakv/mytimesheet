@@ -26,6 +26,8 @@ public class Word {
 	@Column
 	private String gameId;
 	@Column
+	private Date timeCreated;
+	@Column
 	private Date timeVisible;
 	@Column
 	private Date timeBecameWord;
@@ -92,5 +94,13 @@ public class Word {
 
 	public void setBecameWord(Key becameWord) {
 		this.becameWord = becameWord;
+	}
+
+	public Date getTimeCreated() {
+		return timeCreated;
+	}
+
+	public void setTimeCreated(Date timeCreated) {
+		this.timeCreated = timeCreated;
 	}
 }
