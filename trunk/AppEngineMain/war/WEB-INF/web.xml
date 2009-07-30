@@ -35,6 +35,11 @@
     <servlet-name>myTimeService</servlet-name>
     <servlet-class>moten.david.time.mytime.server.ApplicationServiceImpl</servlet-class>
   </servlet>
+  
+  <servlet>
+    <servlet-name>squabbleService</servlet-name>
+    <servlet-class>moten.david.squabble.server.ApplicationServiceImpl</servlet-class>
+  </servlet>
 
   <servlet>
     <servlet-name>nines</servlet-name>
@@ -46,9 +51,19 @@
     <jsp-file>/mytime.jsp</jsp-file>
   </servlet>
   
+  <servlet>
+    <servlet-name>squabble</servlet-name>
+    <jsp-file>/squabble.jsp</jsp-file>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>myTimeService</servlet-name>
     <url-pattern>/mytime/service</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>squabbleService</servlet-name>
+    <url-pattern>/squabble/service</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
@@ -64,6 +79,11 @@
   <servlet-mapping>
     <servlet-name>mytime</servlet-name>
     <url-pattern>/mytime</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>squabble</servlet-name>
+    <url-pattern>/squabble</url-pattern>
   </servlet-mapping>
 
 </web-app>

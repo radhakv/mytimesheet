@@ -9,10 +9,8 @@ public class ApplicationInjectorModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(EntityManagerFactory.class)
-				.toInstance(
-						Persistence
-								.createEntityManagerFactory("transactions-optional"));
+		bind(EntityManagerFactory.class).toInstance(
+				Persistence.createEntityManagerFactory("mytime"));
 	}
 
 }

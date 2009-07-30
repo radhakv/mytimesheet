@@ -1,0 +1,13 @@
+#documentation only, not read by computer
+Don't replace end of line \n with space if 
+current or next line starts with space
+current or next line starts with number and .
+current line ends with .
+current or next line starts with Chapter
+current or next line starts with Example 
+current or next line starts with --->
+current line ends with :
+current or next line starts with ==
+current or next line starts with  --
+current or next line starts with [
+next line starts with \n
