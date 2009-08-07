@@ -1,0 +1,32 @@
+.app {
+	width:100%;
+}
+
+.title {
+	width:100%;
+}
+
+.menu {
+}
+
+.menuItem {
+	font-size:100%;
+	color:blue; 
+	background-color:transparent; 
+	text-decoration:none;
+	text-align:left;
+	border:none;  
+	margin-bottom:8px;
+	margin-left:50px;
+	padding:0px;
+}
+
+.body {
+	margin-left:20px;
+	border-left:1px solid black;
+	width:100%;
+}
+
+p {
+	margin-left:20px;
+}
