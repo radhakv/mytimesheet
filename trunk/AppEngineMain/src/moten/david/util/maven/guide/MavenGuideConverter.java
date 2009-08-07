@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-public class Converter {
+public class MavenGuideConverter {
 
 	public void convert(InputStream is, PrintStream out) throws IOException {
 		InputStreamReader isr = new InputStreamReader(is);
@@ -56,10 +56,10 @@ public class Converter {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Converter c = new Converter();
+		MavenGuideConverter c = new MavenGuideConverter();
 		PrintStream out = new PrintStream(new File(
 				"docs/maven-guide-processed.txt"));
-		c.convert(Converter.class.getResourceAsStream("maven-guide.txt"), out);
+		c.convert(MavenGuideConverter.class.getResourceAsStream("maven-guide.txt"), out);
 	}
 
 }
