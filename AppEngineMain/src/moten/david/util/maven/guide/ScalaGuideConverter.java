@@ -1,58 +1,44 @@
 package moten.david.util.maven.guide;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.log4j.lf5.util.StreamUtils;
 
 public class ScalaGuideConverter {
 
 	public void convert(InputStream is, PrintStream out) throws IOException {
-		InputStreamReader isr = new InputStreamReader(is);
+
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		StreamUtils.copy(is, bytes);
+		String s = bytes.toString();
+		InputStreamReader isr = new InputStreamReader(getClass()
+				.getResourceAsStream("replacements.txt"));
 		BufferedReader br = new BufferedReader(isr);
-		String previousLine = null;
 		String line;
 		while ((line = br.readLine()) != null) {
-			if (previousLine != null) {
-				boolean retainNewLine = (line.startsWith(" ") && !line
-						.startsWith("    "))
-						|| (previousLine.startsWith(" ") && !previousLine
-								.startsWith("    "))
-						|| startsWithNumberDot(line)
-						|| startsWithNumberDot(previousLine)
-						|| previousLine.endsWith(".")
-						|| previousLine.startsWith("Chapter ")
-						|| line.startsWith("Chapter ")
-						|| previousLine.startsWith("Example ")
-						|| line.startsWith("Example ")
-						|| previousLine.startsWith("--")
-						|| line.startsWith("--")
-						|| previousLine.endsWith(":")
-						|| previousLine.startsWith("==")
-						|| line.startsWith("==")
-						|| previousLine.startsWith("[")
-						|| line.startsWith("[")
-						|| line.length() == 0
-						|| previousLine.startsWith("A.")
-						|| line.startsWith("A.")
-						|| previousLine.startsWith("B.")
-						|| line.startsWith("B.");
-				if (retainNewLine)
-					out.println(previousLine);
-				else {
-					if (previousLine.endsWith("-")) {
-						previousLine = previousLine.substring(0, previousLine
-								.length() - 1);
-					} else
-						previousLine += " ";
-					out.print(previousLine);
-				}
+			if (!line.startsWith("#") && line.length() > 0) {
+				String[] items = line.split("\t");
+				String patternString = items[0];
+				String replaceWith = "";
+				if (items.length > 1)
+					replaceWith = items[1];
+				replaceWith = replaceWith.replaceAll("newLine", "\n");
+				System.out.println("replacing " + patternString + " with "
+						+ "'" + replaceWith + "'");
+				Pattern pattern = Pattern.compile(patternString,
+						Pattern.UNIX_LINES + Pattern.MULTILINE);
+				Matcher matcher = pattern.matcher(s);
+				s = matcher.replaceAll(replaceWith);
 			}
-			previousLine = line;
 		}
-		out.println(line);
+		out.write(s.getBytes());
 		br.close();
 		isr.close();
 	}
@@ -66,12 +52,18 @@ public class ScalaGuideConverter {
 		return (i + 1 < line.length() && line.charAt(i + 1) == '.');
 	}
 
-	public static void main(String[] args) throws IOException {
-		ScalaGuideConverter c = new ScalaGuideConverter();
-		PrintStream out = new PrintStream(new File(
-				"docs/programming-in-scala-processed.txt"));
-		c.convert(ScalaGuideConverter.class
-				.getResourceAsStream("programming-in-scala.txt"), out);
+	private static boolean matches(String line, String regexp) {
+		Pattern pattern = Pattern.compile(regexp);
+		Matcher matcher = pattern.matcher(line);
+		return matcher.matches();
 	}
 
+	public static void main(String[] args) throws IOException {
+		ScalaGuideConverter c = new ScalaGuideConverter();
+		PrintStream out = new PrintStream(
+				"docs/programming-in-scala-processed.txt");
+		c.convert(ScalaGuideConverter.class
+				.getResourceAsStream("programming-in-scala.txt"), out);
+
+	}
 }
