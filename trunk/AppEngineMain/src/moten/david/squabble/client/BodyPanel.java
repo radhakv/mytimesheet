@@ -3,6 +3,7 @@ package moten.david.squabble.client;
 import moten.david.squabble.client.controller.ControllerListener;
 import moten.david.squabble.client.event.PlayGame;
 import moten.david.squabble.client.event.SelectGame;
+import moten.david.squabble.client.play.PlayPanel;
 
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;

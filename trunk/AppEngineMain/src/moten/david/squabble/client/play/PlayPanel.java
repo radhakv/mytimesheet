@@ -1,4 +1,4 @@
-package moten.david.squabble.client;
+package moten.david.squabble.client.play;
 
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
