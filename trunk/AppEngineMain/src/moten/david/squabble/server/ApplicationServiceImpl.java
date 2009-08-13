@@ -2,7 +2,9 @@ package moten.david.squabble.server;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -57,6 +59,15 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 
 	public synchronized void processNextTurn(String player) {
 
+	}
+
+	public Word[] getWords(String gameId) {
+		List<Word> words = new ArrayList<Word>();
+		Word word = new Word();
+		word.setValue("hello");
+		word.setOwner("dave");
+
+		return words.toArray(new Word[] {});
 	}
 
 }
