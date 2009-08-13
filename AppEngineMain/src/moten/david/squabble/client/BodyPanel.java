@@ -1,6 +1,7 @@
 package moten.david.squabble.client;
 
 import moten.david.squabble.client.controller.ControllerListener;
+import moten.david.squabble.client.event.Login;
 import moten.david.squabble.client.event.PlayGame;
 import moten.david.squabble.client.event.SelectGame;
 import moten.david.squabble.client.play.PlayPanel;
@@ -18,7 +19,23 @@ public class BodyPanel extends VerticalPanel {
 				createSelectGameListener());
 		Application.getInstance().getController().addListener(PlayGame.class,
 				createPlayGameListener());
+		Application.getInstance().getController().addListener(Login.class,
+				createLoginListener());
 		playPanel = new PlayPanel();
+	}
+
+	private ControllerListener<Login> createLoginListener() {
+		return new ControllerListener<Login>() {
+			@Override
+			public void event(Login event) {
+				setContent(new LoginPanel());
+			}
+		};
+	}
+
+	public void setContent(Panel panel) {
+		this.clear();
+		add(panel);
 	}
 
 	private ControllerListener<PlayGame> createPlayGameListener() {
@@ -28,11 +45,6 @@ public class BodyPanel extends VerticalPanel {
 				setContent(playPanel);
 			}
 		};
-	}
-
-	public void setContent(Panel panel) {
-		this.clear();
-		add(panel);
 	}
 
 	private ControllerListener<SelectGame> createSelectGameListener() {

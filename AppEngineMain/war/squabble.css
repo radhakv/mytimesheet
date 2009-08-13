@@ -23,10 +23,17 @@
 
 .body {
 	margin-left:20px;
-	border-left:1px solid black;
 	width:100%;
 }
 
 p {
 	margin-left:20px;
+}
+
+.login {
+	margin-left:50px;
+}
+
+.loginLabel {
+	margin-right:15px;	
 }

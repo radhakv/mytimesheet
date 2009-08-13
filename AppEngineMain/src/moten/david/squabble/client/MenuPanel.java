@@ -2,6 +2,7 @@ package moten.david.squabble.client;
 
 import moten.david.squabble.client.controller.ControllerListener;
 import moten.david.squabble.client.event.GameSelected;
+import moten.david.squabble.client.event.Login;
 import moten.david.squabble.client.event.PlayGame;
 import moten.david.squabble.client.event.SelectGame;
 
@@ -13,12 +14,21 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class MenuPanel extends VerticalPanel {
 
 	public MenuPanel() {
+
 		setStyleName("menu");
+		Button login = createMenuItem("Login");
+		add(login);
 		Button selectGame = createMenuItem("Select game");
 		add(selectGame);
 		final Button playGame = createMenuItem("Play");
 		add(playGame);
 		playGame.setVisible(false);
+		login.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				Application.getInstance().getController().event(new Login());
+			}
+		});
 		selectGame.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
