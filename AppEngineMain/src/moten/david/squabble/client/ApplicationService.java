@@ -1,5 +1,7 @@
 package moten.david.squabble.client;
 
+import moten.david.squabble.Word;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -8,5 +10,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("service")
 public interface ApplicationService extends RemoteService {
-
+	public Word[] getWords(String gameId);
 }
