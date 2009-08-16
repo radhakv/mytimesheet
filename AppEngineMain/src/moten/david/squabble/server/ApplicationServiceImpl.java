@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import moten.david.squabble.ApplicationInjector;
 import moten.david.squabble.Word;
 import moten.david.squabble.client.ApplicationService;
+import moten.david.squabble.client.MyWord;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
@@ -26,6 +27,10 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 
 	public ApplicationServiceImpl() {
 		ApplicationInjector.getInjector().injectMembers(this);
+	}
+
+	public String newGame() {
+		return System.currentTimeMillis() + "";
 	}
 
 	public String newGame(String gameName, String language) {
@@ -61,13 +66,28 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 
 	}
 
-	public Word[] getWords(String gameId) {
-		List<Word> words = new ArrayList<Word>();
-		Word word = new Word();
-		word.setValue("hello");
-		word.setOwner("dave");
+	public MyWord[] getWords(String gameId) {
 
-		return words.toArray(new Word[] {});
+		EntityManager em = emf.createEntityManager();
+		List<Word> list = em.createQuery(
+				"select * from moten.david.squabble.Word where gameId=:gameId")
+				.getResultList();
+		List<MyWord> words = new ArrayList<MyWord>();
+		for (Word w : list) {
+			MyWord word = new MyWord();
+			word.setId(w.getId().getId());
+			word.setBecameWord((w.getBecameWord() == null ? null : w
+					.getBecameWord().getId()));
+			word.setGameId(w.getGameId());
+			word.setOwner(w.getOwner());
+			word.setTimeBecameWord(w.getTimeBecameWord());
+			word.setTimeCreated(w.getTimeCreated());
+			word.setTimeVisible(w.getTimeVisible());
+			word.setValue(w.getValue());
+			word.setVisible(w.isVisible());
+			words.add(word);
+		}
+		em.close();
+		return words.toArray(new MyWord[] {});
 	}
-
 }
