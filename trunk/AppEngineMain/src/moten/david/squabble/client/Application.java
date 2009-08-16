@@ -1,8 +1,12 @@
 package moten.david.squabble.client;
 
 import moten.david.squabble.client.controller.Controller;
+import moten.david.squabble.client.controller.ControllerListener;
+import moten.david.squabble.client.event.GameSelected;
+import moten.david.squabble.client.event.NewGameRequested;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class Application {
 
@@ -32,7 +36,24 @@ public class Application {
 	}
 
 	public Application() {
+		controller.addListener(NewGameRequested.class,
+				new ControllerListener<NewGameRequested>() {
 
+					@Override
+					public void event(NewGameRequested event) {
+						applicationService.newGame(new AsyncCallback<String>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO
+							}
+
+							@Override
+							public void onSuccess(String result) {
+								controller.event(new GameSelected(result));
+							}
+						});
+					}
+				});
 	}
-
 }
