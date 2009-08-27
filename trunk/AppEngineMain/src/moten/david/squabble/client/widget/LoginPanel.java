@@ -1,5 +1,6 @@
-package moten.david.squabble.client;
+package moten.david.squabble.client.widget;
 
+import moten.david.squabble.client.Application;
 import moten.david.squabble.client.event.NameSelected;
 
 import com.google.gwt.event.dom.client.ChangeEvent;

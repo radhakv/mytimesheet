@@ -1,7 +1,8 @@
-package moten.david.squabble.client;
+package moten.david.squabble.client.widget;
 
 import java.util.Date;
 
+import moten.david.squabble.client.Application;
 import moten.david.squabble.client.event.GameSelected;
 import moten.david.squabble.client.event.NewGameRequested;
 
