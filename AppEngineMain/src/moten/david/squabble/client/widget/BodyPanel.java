@@ -1,10 +1,10 @@
-package moten.david.squabble.client;
+package moten.david.squabble.client.widget;
 
+import moten.david.squabble.client.Application;
 import moten.david.squabble.client.controller.ControllerListener;
 import moten.david.squabble.client.event.Login;
 import moten.david.squabble.client.event.PlayGame;
 import moten.david.squabble.client.event.SelectGame;
-import moten.david.squabble.client.play.PlayPanel;
 
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;

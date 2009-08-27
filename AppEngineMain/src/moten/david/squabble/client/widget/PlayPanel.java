@@ -1,4 +1,4 @@
-package moten.david.squabble.client.play;
+package moten.david.squabble.client.widget;
 
 import moten.david.squabble.client.Application;
 import moten.david.squabble.client.controller.ControllerListener;
