@@ -18,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import moten.david.music.album.art.AlbumArt;
+
 public class AlbumViewer extends JPanel {
 
 	private static final long serialVersionUID = -682832479831122887L;
@@ -39,15 +41,17 @@ public class AlbumViewer extends JPanel {
 	private final List<AlbumViewerListener> listeners = new ArrayList<AlbumViewerListener>();
 	private final ImageProvider imageProvider;
 	private final AlbumCoverListener albumCoverListener;
+	private final AlbumArt albumArt;
 
 	public void addListener(AlbumViewerListener l) {
 		listeners.add(l);
 	}
 
 	public AlbumViewer(MusicFolderProvider musicFolderProvider,
-			final Player player, ImageProvider imageProvider) {
+			final Player player, ImageProvider imageProvider, AlbumArt albumArt) {
 		this.musicFolderProvider = musicFolderProvider;
 		this.imageProvider = imageProvider;
+		this.albumArt = albumArt;
 		FlowLayout layout = new FlowLayout();
 		setLayout(layout);
 		setFocusable(true);
@@ -156,7 +160,7 @@ public class AlbumViewer extends JPanel {
 		for (MusicFolder musicFolder : musicFolders) {
 			// ImageIcon icon = new javax.swing.ImageIcon(image.getImage());
 			AlbumCover cover = new AlbumCover(musicFolder, imageProvider,
-					iconWidth, iconHeight);
+					iconWidth, iconHeight, albumArt);
 			cover.addListener(albumCoverListener);
 			add(cover);
 			cover.repaint();
@@ -180,8 +184,9 @@ public class AlbumViewer extends JPanel {
 		final MusicFolderProvider musicFolderProvider = new MusicFolderProviderImpl(
 				musicDirectory);
 		final ImageProvider imageProvider = new ImageProviderImpl();
+		final AlbumArt albumArt = new AlbumArt();
 		final AlbumViewer albumViewer = new AlbumViewer(musicFolderProvider,
-				player, imageProvider);
+				player, imageProvider, albumArt);
 		AlbumViewerListener albumViewerListener = new AlbumViewerListener() {
 			boolean randomize = false;
 
