@@ -9,8 +9,12 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import moten.david.music.album.art.AlbumArt;
 
 public class AlbumCover extends JPanel {
 
@@ -18,9 +22,12 @@ public class AlbumCover extends JPanel {
 
 	private final List<AlbumCoverListener> listeners = new ArrayList<AlbumCoverListener>();
 
-	public AlbumCover(MusicFolder musicFolder, ImageProvider imageProvider,
-			int iconWidth, int iconHeight) {
+	private final AlbumArt albumArt;
 
+	public AlbumCover(MusicFolder musicFolder, ImageProvider imageProvider,
+			int iconWidth, int iconHeight, AlbumArt albumArt) {
+
+		this.albumArt = albumArt;
 		setLayout(new GridLayout(1, 1));
 		String fileInfo = "";
 		if (musicFolder.getImage() != null)
@@ -40,7 +47,7 @@ public class AlbumCover extends JPanel {
 			JLabel label = new JLabel(captionHtml);
 			add(label);
 			setPreferredSize(new Dimension(iconWidth, iconHeight));
-			label.addMouseListener(mouseListener);
+			addMouseListener(mouseListener);
 		}
 		setToolTipText(captionHtml);
 	}
@@ -58,11 +65,32 @@ public class AlbumCover extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+				if (e.getButton() == MouseEvent.BUTTON1
+						&& e.getClickCount() == 2) {
 					firePlay(musicFolder);
+				}
+				if (e.getButton() == MouseEvent.BUTTON2) {
+					// findCoverArt(musicFolder);
 				}
 			}
 		};
+	}
+
+	protected void findCoverArt(MusicFolder musicFolder) {
+		JFrame frame = new JFrame(musicFolder.getArtist() + " - "
+				+ musicFolder.getTitle());
+		List<String> urls = albumArt.searchForImageUrls(
+				musicFolder.getArtist(), musicFolder.getTitle());
+		JPanel panel = new JPanel();
+		JScrollPane scroll = new JScrollPane(panel);
+		for (String url : urls) {
+			panel
+					.add(new JLabel("<html><img src=\"" + url
+							+ "\"></img></html>"));
+		}
+		frame.getContentPane().add(scroll);
+		frame.setSize(800, 600);
+		frame.setVisible(true);
 	}
 
 	protected void firePlay(MusicFolder musicFolder) {

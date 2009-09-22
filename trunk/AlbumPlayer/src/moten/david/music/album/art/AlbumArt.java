@@ -21,6 +21,13 @@ public class AlbumArt {
 	public List<String> searchForImageUrls(String artist, String album) {
 		List<String> keywords = getWords(artist);
 		keywords.addAll(getWords(album));
+		List<String> list = getUrls(keywords);
+		list.addAll(getUrls(getWords(album)));
+		list.addAll(getUrls(getWords(artist)));
+		return list;
+	}
+
+	private List<String> getUrls(List<String> keywords) {
 		StringBuffer s = new StringBuffer();
 		for (String keyword : keywords) {
 			if (s.length() > 0)
@@ -67,13 +74,13 @@ public class AlbumArt {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.setProperty("http.proxyHost", "proxy.amsa.gov.au");
-		System.setProperty("http.proxyPort", "8080");
+		// System.setProperty("http.proxyHost", "proxy.amsa.gov.au");
+		// System.setProperty("http.proxyPort", "8080");
 		AlbumArt art = new AlbumArt();
 		List<String> list = art.searchForImageUrls("David Bowie", "Lodger");
 		StringBuffer html = new StringBuffer("<html>");
-		List<String> urls = art.getImageUrls(art.getClass()
-				.getResourceAsStream("test.html"));
+		// List<String> urls = art.getImageUrls(art.getClass()
+		// .getResourceAsStream("test.html"));
 		for (String s : list) {
 			html.append("<img src=\"" + s + "\"></img>");
 		}
