@@ -18,16 +18,16 @@ public class AlbumArt {
 
 	private static final String baseUrl = "http://www.albumart.org/index.php?srchkey=${keywords}&itempage=1&newsearch=1&searchindex=Music";
 
-	public List<String> searchForImageUrls(String artist, String album) {
+	public List<UrlPair> searchForImageUrls(String artist, String album) {
 		List<String> keywords = getWords(artist);
 		keywords.addAll(getWords(album));
-		List<String> list = getUrls(keywords);
+		List<UrlPair> list = getUrls(keywords);
 		list.addAll(getUrls(getWords(album)));
 		list.addAll(getUrls(getWords(artist)));
 		return list;
 	}
 
-	private List<String> getUrls(List<String> keywords) {
+	private List<UrlPair> getUrls(List<String> keywords) {
 		StringBuffer s = new StringBuffer();
 		for (String keyword : keywords) {
 			if (s.length() > 0)
@@ -38,7 +38,7 @@ public class AlbumArt {
 		try {
 			URL url = new URL(address);
 			InputStream is = url.openStream();
-			List<String> imageUrls = getImageUrls(is);
+			List<UrlPair> imageUrls = getImageUrls(is);
 			System.out.println(imageUrls);
 			return imageUrls;
 		} catch (MalformedURLException e) {
@@ -48,14 +48,35 @@ public class AlbumArt {
 		}
 	}
 
-	private List<String> getImageUrls(InputStream is) throws IOException {
+	public static class UrlPair {
+		private final String small;
+		private final String large;
+
+		public UrlPair(String small, String large) {
+			super();
+			this.small = small;
+			this.large = large;
+		}
+
+		public String getSmall() {
+			return small;
+		}
+
+		public String getLarge() {
+			return large;
+		}
+
+	}
+
+	private List<UrlPair> getImageUrls(InputStream is) throws IOException {
 		String html = getString(is);
 		Pattern pattern = Pattern
-				.compile("http://ecx(/|\\.|\\d|[a-z]|[A-Z]|-)*\\.jpg");
+				.compile("http://ecx(/|\\.|\\d|[a-z]|[A-Z]|-)*\\._SL160_\\.jpg");
 		Matcher matcher = pattern.matcher(html);
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<UrlPair> list = new ArrayList<UrlPair>();
 		while (matcher.find())
-			list.add(matcher.group());
+			list.add(new UrlPair(matcher.group(), matcher.group().replace(
+					"._SL160_", "")));
 		return list;
 	}
 
@@ -77,12 +98,12 @@ public class AlbumArt {
 		// System.setProperty("http.proxyHost", "proxy.amsa.gov.au");
 		// System.setProperty("http.proxyPort", "8080");
 		AlbumArt art = new AlbumArt();
-		List<String> list = art.searchForImageUrls("David Bowie", "Lodger");
+		List<UrlPair> list = art.searchForImageUrls("David Bowie", "Lodger");
 		StringBuffer html = new StringBuffer("<html>");
 		// List<String> urls = art.getImageUrls(art.getClass()
 		// .getResourceAsStream("test.html"));
-		for (String s : list) {
-			html.append("<img src=\"" + s + "\"></img>");
+		for (UrlPair s : list) {
+			html.append("<img src=\"" + s.getSmall() + "\"></img>");
 		}
 		html.append("</html>");
 

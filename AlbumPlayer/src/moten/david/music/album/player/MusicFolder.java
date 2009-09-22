@@ -1,6 +1,11 @@
 package moten.david.music.album.player;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MusicFolder {
 	private final File image;
@@ -37,5 +42,27 @@ public class MusicFolder {
 
 	public File getDirectory() {
 		return directory;
+	}
+
+	public void saveImageToDirectory(String address) {
+		try {
+			URL url = new URL(address);
+			InputStream is = url.openStream();
+			FileOutputStream fos = new FileOutputStream(new File(directory,
+					"album-player.jpg"));
+			byte[] bytes = new byte[4096];
+			int n = 0;
+			while ((n = is.read(bytes)) > 0) {
+				fos.write(bytes, 0, n);
+			}
+			fos.close();
+			is.close();
+			System.out.println("saved " + address);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }

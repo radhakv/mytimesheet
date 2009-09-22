@@ -9,10 +9,8 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import moten.david.music.album.art.AlbumArt;
 
@@ -70,27 +68,12 @@ public class AlbumCover extends JPanel {
 					firePlay(musicFolder);
 				}
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					// findCoverArt(musicFolder);
+					AlbumArtFinder finder = new AlbumArtFinder(albumArt,
+							musicFolder);
+					finder.findCoverArt();
 				}
 			}
 		};
-	}
-
-	protected void findCoverArt(MusicFolder musicFolder) {
-		JFrame frame = new JFrame(musicFolder.getArtist() + " - "
-				+ musicFolder.getTitle());
-		List<String> urls = albumArt.searchForImageUrls(
-				musicFolder.getArtist(), musicFolder.getTitle());
-		JPanel panel = new JPanel();
-		JScrollPane scroll = new JScrollPane(panel);
-		for (String url : urls) {
-			panel
-					.add(new JLabel("<html><img src=\"" + url
-							+ "\"></img></html>"));
-		}
-		frame.getContentPane().add(scroll);
-		frame.setSize(800, 600);
-		frame.setVisible(true);
 	}
 
 	protected void firePlay(MusicFolder musicFolder) {
