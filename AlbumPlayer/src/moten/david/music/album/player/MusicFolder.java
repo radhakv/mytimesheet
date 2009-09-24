@@ -8,7 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MusicFolder {
-	private final File image;
+	private File image;
 	private final String artist;
 	private final String title;
 	private final String comment;
@@ -48,8 +48,9 @@ public class MusicFolder {
 		try {
 			URL url = new URL(address);
 			InputStream is = url.openStream();
-			FileOutputStream fos = new FileOutputStream(new File(directory,
-					"album-player.jpg"));
+			File file = new File(directory, "album-player.jpg");
+			image = file;
+			FileOutputStream fos = new FileOutputStream(file);
 			byte[] bytes = new byte[4096];
 			int n = 0;
 			while ((n = is.read(bytes)) > 0) {

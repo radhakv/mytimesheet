@@ -22,6 +22,8 @@ import moten.david.music.album.art.AlbumArt;
 
 public class AlbumViewer extends JPanel {
 
+	private static final String USER_HOME = "user.home";
+	private static final String MUSIC_HOME = "music.home";
 	private static final long serialVersionUID = -682832479831122887L;
 	private static int iconHeight = 200;
 	private static int iconWidth = 200;
@@ -180,7 +182,9 @@ public class AlbumViewer extends JPanel {
 		// win.setFocusable(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		final Player player = new Player();
-		String musicDirectory = System.getProperty("user.home") + "/Music";
+		String musicDirectory = System.getProperty(USER_HOME) + "/Music";
+		if (System.getProperty(MUSIC_HOME) != null)
+			musicDirectory = System.getProperty(MUSIC_HOME);
 		final MusicFolderProvider musicFolderProvider = new MusicFolderProviderImpl(
 				musicDirectory);
 		final ImageProvider imageProvider = new ImageProviderImpl();

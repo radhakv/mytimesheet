@@ -42,7 +42,7 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 					bestSize = f.length();
 				}
 			}
-			if (bestFile != null)
+			if (hasAudio && bestFile != null)
 				files.add(bestFile);
 			else if (hasAudio)
 				files.add(file);
@@ -71,8 +71,8 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 						&& i < files.size(); i++) {
 					File file = files.get(i);
 					if (file.isDirectory())
-						add(new MusicFolder(null, file.getName(), file
-								.getParentFile().getName(), "comments", file));
+						add(new MusicFolder(null, file.getParentFile()
+								.getName(), file.getName(), "comments", file));
 					else
 						add(new MusicFolder(file, file.getParentFile()
 								.getParentFile().getName(), file
