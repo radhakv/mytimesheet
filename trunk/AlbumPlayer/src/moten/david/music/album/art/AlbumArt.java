@@ -28,6 +28,8 @@ public class AlbumArt {
 	}
 
 	private List<UrlPair> getUrls(List<String> keywords) {
+		if (keywords.size() == 0)
+			return new ArrayList<UrlPair>();
 		StringBuffer s = new StringBuffer();
 		for (String keyword : keywords) {
 			if (s.length() > 0)
@@ -90,6 +92,8 @@ public class AlbumArt {
 	}
 
 	private List<String> getWords(String words) {
+		if (words == null || words.trim().length() == 0)
+			return new ArrayList<String>();
 		String[] items = words.split(" ");
 		return new ArrayList<String>(Arrays.asList(items));
 	}
