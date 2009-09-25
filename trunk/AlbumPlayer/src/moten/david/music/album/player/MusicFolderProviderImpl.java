@@ -1,6 +1,7 @@
 package moten.david.music.album.player;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,23 +11,31 @@ import java.util.List;
 public class MusicFolderProviderImpl implements MusicFolderProvider {
 
 	private ArrayList<File> files;
-	private final ArrayList<File> filesOriginal;
+	private ArrayList<File> filesOriginal;
 	private boolean randomized = false;
+	private FileFilter filter;
+	private final File musicDirectory;
 
-	public MusicFolderProviderImpl(String musicDirectory) {
-		File file = new File(musicDirectory);
-		files = new ArrayList<File>();
-		addImages(file, files);
-		filesOriginal = new ArrayList<File>(files);
-		System.out.println(files.toString());
-		System.out.println(files.size() + " images");
+	public MusicFolderProviderImpl(String musicDirectory, FileFilter filter) {
+		this.musicDirectory = new File(musicDirectory);
+		this.filter = filter;
+		loadFiles();
 	}
 
 	public int getCount() {
 		return files.size();
 	}
 
-	private void addImages(File file, ArrayList<File> files) {
+	private void loadFiles() {
+		files = new ArrayList<File>();
+		addMusicFolders(musicDirectory, files, filter);
+		filesOriginal = new ArrayList<File>(files);
+		System.out.println(files.toString());
+		System.out.println(files.size() + " images");
+	}
+
+	private void addMusicFolders(File file, ArrayList<File> files,
+			FileFilter filter) {
 		if (file.isDirectory()) {
 			File bestFile = null;
 			Long bestSize = null;
@@ -43,13 +52,12 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 				}
 			}
 			if (hasAudio && bestFile != null)
-				files.add(bestFile);
+				addToFiles(files, bestFile, filter);
 			else if (hasAudio)
-				files.add(file);
+				addToFiles(files, file, filter);
 
 			File[] list = file.listFiles();
 			Arrays.sort(list, new Comparator<File>() {
-
 				@Override
 				public int compare(File f1, File f2) {
 					return f1.getName().compareTo(f2.getName());
@@ -57,8 +65,13 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 			});
 			for (File f : list)
 				if (f.isDirectory())
-					addImages(f, files);
+					addMusicFolders(f, files, filter);
 		}
+	}
+
+	private void addToFiles(ArrayList<File> files, File file, FileFilter filter) {
+		if (filter == null || filter.accept(file))
+			files.add(file);
 	}
 
 	@Override
@@ -99,6 +112,12 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 	public boolean getRandomize() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void setFilter(FileFilter filter) {
+		this.filter = filter;
+		loadFiles();
 	}
 
 }
