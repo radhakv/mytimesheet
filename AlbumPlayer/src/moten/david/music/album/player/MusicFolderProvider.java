@@ -1,5 +1,6 @@
 package moten.david.music.album.player;
 
+import java.io.FileFilter;
 import java.util.List;
 
 public interface MusicFolderProvider {
@@ -10,4 +11,6 @@ public interface MusicFolderProvider {
 	void setRandomize(boolean value);
 
 	boolean getRandomize();
+
+	void setFilter(FileFilter filter);
 }
