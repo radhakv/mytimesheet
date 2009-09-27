@@ -8,9 +8,9 @@ public interface MusicFolderProvider {
 
 	int getCount();
 
-	void setRandomize(boolean value);
+	void setShuffled(boolean value);
 
-	boolean getRandomize();
+	boolean isShuffled();
 
 	void setFilter(FileFilter filter);
 

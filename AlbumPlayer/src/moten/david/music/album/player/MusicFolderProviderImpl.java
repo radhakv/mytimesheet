@@ -44,7 +44,7 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 				if (Util.isAudio(f))
 					hasAudio = true;
 				String name = f.getName().toUpperCase();
-				if (name.endsWith(".JPG") && !name.endsWith(" BACK.JPG")
+				if (name.endsWith(".JPG") && !name.endsWith("BACK.JPG")
 						&& f.length() < 1000000
 						&& (bestSize == null || bestSize < f.length())) {
 					bestFile = f;
@@ -99,7 +99,7 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 	}
 
 	@Override
-	public void setRandomize(boolean value) {
+	public void setShuffled(boolean value) {
 		randomized = value;
 		if (randomized) {
 			files = new ArrayList<File>(filesOriginal);
@@ -109,7 +109,7 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 	}
 
 	@Override
-	public boolean getRandomize() {
+	public boolean isShuffled() {
 		// TODO Auto-generated method stub
 		return false;
 	}

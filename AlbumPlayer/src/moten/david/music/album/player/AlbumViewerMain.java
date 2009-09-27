@@ -11,6 +11,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,6 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import moten.david.music.album.art.AlbumArt;
+import moten.david.music.album.player.event.ClearFilter;
 import moten.david.music.album.player.event.EditFilter;
 import moten.david.swing.mvc.controller.ControllerListener;
 
@@ -26,16 +28,24 @@ public class AlbumViewerMain extends JFrame {
 	private static final String MUSIC_HOME = "music.home";
 	private static final String USER_HOME = "user.home";
 	private final List<String> filterKeywords;
-	private final MusicFolderProviderImpl musicFolderProvider;
-	private final AlbumViewer albumViewer;
+	private MusicFolderProviderImpl musicFolderProvider;
+	private AlbumViewer albumViewer;
+	private String musicDirectory;
 
 	public AlbumViewerMain() {
 
-		final Player player = new Player();
-		String musicDirectory = System.getProperty(USER_HOME) + "/Music";
+		musicDirectory = System.getProperty(USER_HOME) + "/Music";
 		if (System.getProperty(MUSIC_HOME) != null)
 			musicDirectory = System.getProperty(MUSIC_HOME);
+		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+		musicDirectory = prefs.get("music.home", musicDirectory);
 		filterKeywords = new ArrayList<String>();
+		loadMusic();
+	}
+
+	private void loadMusic() {
+		getContentPane().removeAll();
+		final Player player = new Player();
 		musicFolderProvider = new MusicFolderProviderImpl(musicDirectory,
 				createFileFilter());
 		final ImageProvider imageProvider = new ImageProviderImpl();
@@ -66,7 +76,7 @@ public class AlbumViewerMain extends JFrame {
 						// player.previous();
 					} else if (ch == KeyEvent.VK_R) {
 						randomize = !randomize;
-						musicFolderProvider.setRandomize(randomize);
+						musicFolderProvider.setShuffled(randomize);
 						albumViewer.redraw();
 					} else
 						player.write(new byte[] { (byte) ch });
@@ -109,6 +119,14 @@ public class AlbumViewerMain extends JFrame {
 					}
 				});
 
+		MyController.getController().addListener(ClearFilter.class,
+				new ControllerListener<ClearFilter>() {
+					@Override
+					public void event(ClearFilter event) {
+						clearFilter();
+					}
+				});
+
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -125,6 +143,11 @@ public class AlbumViewerMain extends JFrame {
 
 	}
 
+	protected void clearFilter() {
+		updateFilter();
+		resetFolderProviderAndRedraw();
+	}
+
 	private void updateFilter(String... keywords) {
 		filterKeywords.clear();
 		for (String s : keywords)
@@ -138,13 +161,21 @@ public class AlbumViewerMain extends JFrame {
 			public boolean accept(File file) {
 				if (filterKeywords.size() == 0)
 					return true;
+				String path = file.getAbsolutePath()
+						.replace(musicDirectory, "").toUpperCase();
 				for (String keyword : filterKeywords)
-					if (file.getAbsolutePath().toUpperCase().contains(
-							keyword.toUpperCase()))
+					if (path.contains(keyword.toUpperCase()))
 						return true;
 				return false;
 			}
 		};
+	}
+
+	private void resetFolderProviderAndRedraw() {
+		musicFolderProvider.setFilter(musicFolderProvider.getFilter());
+		albumViewer.setImageIndex(0);
+		albumViewer.redraw();
+		repaint();
 	}
 
 	public void editFilter() {
@@ -154,10 +185,7 @@ public class AlbumViewerMain extends JFrame {
 		System.out.println("filter keywords=" + s);
 		if (s != null) {
 			updateFilter(s);
-			musicFolderProvider.setFilter(musicFolderProvider.getFilter());
-			albumViewer.setImageIndex(0);
-			albumViewer.redraw();
-			repaint();
+			resetFolderProviderAndRedraw();
 		}
 	}
 
