@@ -120,4 +120,9 @@ public class MusicFolderProviderImpl implements MusicFolderProvider {
 		loadFiles();
 	}
 
+	@Override
+	public FileFilter getFilter() {
+		return filter;
+	}
+
 }

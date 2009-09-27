@@ -70,9 +70,9 @@ public class AlbumViewer extends JPanel {
 				System.out.println(e.getKeyCode());
 				{
 					if (e.getKeyCode() == KeyEvent.VK_DOWN)
-						next(1);
+						nextRow(1);
 					else if (e.getKeyCode() == KeyEvent.VK_UP)
-						previous(1);
+						nextRow(-1);
 					else if (e.getKeyCode() == KeyEvent.VK_PAGE_UP)
 						previous(1);
 					else if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
@@ -127,13 +127,23 @@ public class AlbumViewer extends JPanel {
 		redraw();
 	}
 
+	private synchronized void nextRow(int rows) {
+		System.out.println("next");
+		int rowSize = getWidth() / iconWidth;
+		imageIndex += rowSize * rows;
+		if (imageIndex < 0)
+			imageIndex = 0;
+		if (imageIndex >= musicFolderProvider.getCount())
+			imageIndex = musicFolderProvider.getCount() - imageCount;
+		redraw();
+	}
+
 	void redraw() {
 		imageCount = updateImages(imageIndex);
 		fireViewChanged();
 	}
 
 	private void previous(int pages) {
-		System.out.println("previous");
 		next(-pages);
 	}
 

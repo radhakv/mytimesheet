@@ -13,4 +13,6 @@ public interface MusicFolderProvider {
 	boolean getRandomize();
 
 	void setFilter(FileFilter filter);
+
+	FileFilter getFilter();
 }

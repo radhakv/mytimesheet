@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import moten.david.music.album.art.AlbumArt;
+import moten.david.music.album.player.event.EditFilter;
 
 public class AlbumCover extends JPanel {
 
@@ -74,7 +75,22 @@ public class AlbumCover extends JPanel {
 			menuItem.addActionListener(play);
 			popup.add(menuItem);
 		}
+		{
+			JMenuItem menuItem = new JMenuItem("Filter...");
+			ActionListener filter = createFilterListener();
+			menuItem.addActionListener(filter);
+			popup.add(menuItem);
+		}
 
+	}
+
+	private ActionListener createFilterListener() {
+		return new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				MyController.getController().event(new EditFilter());
+			}
+		};
 	}
 
 	private ActionListener createExploreListener(final MusicFolder musicFolder) {
