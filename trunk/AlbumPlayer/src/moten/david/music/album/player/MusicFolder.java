@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class MusicFolder {
 	private File image;
@@ -13,6 +18,11 @@ public class MusicFolder {
 	private final String title;
 	private final String comment;
 	private final File directory;
+	private final List<ChangeListener> listeners = new ArrayList<ChangeListener>();
+
+	public void addListener(ChangeListener l) {
+		listeners.add(l);
+	}
 
 	public File getImage() {
 		return image;
@@ -59,11 +69,17 @@ public class MusicFolder {
 			fos.close();
 			is.close();
 			System.out.println("saved " + address);
+			fireChanged();
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
+	}
+
+	private void fireChanged() {
+		for (ChangeListener l : listeners)
+			l.stateChanged(new ChangeEvent(this));
 	}
 }
