@@ -124,9 +124,13 @@ public class AlbumArtFinder extends JFrame {
 		t.start();
 	}
 
-	protected void setStatus(String status) {
-		this.status.setText(status);
-		panel.repaint();
+	protected void setStatus(final String status) {
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				AlbumArtFinder.this.status.setText(status);
+				panel.repaint();
+			}
+		});
 	}
 
 	public void findCoverArt() {
@@ -168,10 +172,11 @@ public class AlbumArtFinder extends JFrame {
 							panel.revalidate();
 							repaint();
 						} else if (event.getButton() == MouseEvent.BUTTON2) {
+							setStatus("Saving...");
 							musicFolder.saveImageToDirectory(url.getLarge());
-
+							setStatus("Saved");
 							frame.setTitle(musicFolder.getArtist() + " - "
-									+ musicFolder.getTitle() + ": Saved");
+									+ musicFolder.getTitle());
 						}
 
 					}
