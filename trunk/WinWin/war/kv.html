@@ -1,0 +1,25 @@
+<html>
+<h2>KeyValue storage</h2>
+
+<form name="put" action="kv" method="post">
+Key:
+<input type="text" name="key" />
+<br/>Value:
+<br/><textarea rows="20" cols="50" name="value"></textarea> 
+<input type="hidden" name="action" value="put"/>
+<br/><input type="submit" value="Submit" />
+</form>
+
+
+<br/>
+<br/>
+<form name="get" action="kv" method="post">
+Key:
+<input type="text" name="key" />
+<input type="hidden" name="action" value="get"/>
+<br/><input type="submit" value="Submit" />
+</form>
+
+</html>
+ 
+ 

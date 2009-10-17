@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+    <servlet-name>kv</servlet-name>
+    <servlet-class>moten.david.kv.KeyValueServlet</servlet-class>
+  </servlet>
+     
+  <servlet-mapping>
+    <servlet-name>kv</servlet-name>
+    <url-pattern>/kv</url-pattern>
+  </servlet-mapping>
+  <!-- 
+  <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/kv</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+  </security-constraint>
+   -->
+
+</web-app>
