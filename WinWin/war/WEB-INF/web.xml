@@ -1,28 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
 
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
-  
-  <servlet>
-    <servlet-name>kv</servlet-name>
-    <servlet-class>moten.david.kv.KeyValueServlet</servlet-class>
-  </servlet>
-     
-  <servlet-mapping>
-    <servlet-name>kv</servlet-name>
-    <url-pattern>/kv</url-pattern>
-  </servlet-mapping>
-  <!-- 
-  <security-constraint>
-        <web-resource-collection>
-            <url-pattern>/kv</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-  </security-constraint>
-   -->
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+	<filter>
+		<filter-name>LoginFilter</filter-name>
+		<description>
+			This filter times the execution of the request after
+			the
+			filter itself, and prints the execution time to
+			the standard output.
+		</description>
+		<filter-class>moten.david.util.google.app.engine.filter.LoginFilter
+		</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>LoginFilter</filter-name>
+		<url-pattern>/kvs</url-pattern>
+	</filter-mapping>
+
+	<servlet>
+		<servlet-name>kv</servlet-name>
+		<servlet-class>moten.david.kv.KeyValueServlet</servlet-class>
+		<init-param>
+			<param-name>secure</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>kv</servlet-name>
+		<url-pattern>/kv</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>kvs</servlet-name>
+		<servlet-class>moten.david.kv.KeyValueServlet</servlet-class>
+		<init-param>
+			<param-name>secure</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>kvs</servlet-name>
+		<url-pattern>/kvs</url-pattern>
+	</servlet-mapping>
+
+	<security-constraint>
+		<web-resource-collection>
+			<url-pattern>/kvs</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 
 </web-app>

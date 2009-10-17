@@ -18,6 +18,7 @@ import org.junit.Test;
 public class TestPost {
 	private static final String UTF_8 = "UTF-8";
 	private static final String CONTENT_TYPE_ENCODED_KMZ = "application%2Fvnd.google-earth.kmz";
+	private static final String GET_URL = "http://win-win.appspot.com/kv?key=amsaCraftpic&action=get&contentType=application%2Fvnd.google-earth.kmz&decodeB64=true&filename=craftpic.kmz";
 
 	private String encode(String s) {
 		try {
@@ -108,5 +109,13 @@ public class TestPost {
 			throw new RuntimeException(e);
 		}
 
+	}
+
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		System.out
+				.println(URLEncoder
+						.encode(
+								"http://win-win.appspot.com/kv?key=amsaCraftpic&action=get&contentType=application%2Fvnd.google-earth.kmz&decodeB64=true&filename=craftpic.kmz",
+								UTF_8));
 	}
 }
