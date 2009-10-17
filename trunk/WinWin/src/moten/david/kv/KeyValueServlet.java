@@ -2,6 +2,7 @@ package moten.david.kv;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +14,14 @@ import moten.david.kv.test.Base64;
 import com.google.inject.Inject;
 
 public class KeyValueServlet extends HttpServlet {
+
+	private boolean secure;
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		if ("true".equalsIgnoreCase(config.getInitParameter("secure")))
+			secure = true;
+	}
 
 	private static final long serialVersionUID = 7666105647132551950L;
 
@@ -43,7 +52,9 @@ public class KeyValueServlet extends HttpServlet {
 			action = new String(action.getBytes(), request
 					.getCharacterEncoding());
 		}
-
+		if (!secure && key.startsWith("secure"))
+			throw new ServletException(
+					"as key starts with 'secure' you must use a secure servlet");
 		if ("get".equals(action)) {
 			String contentType = request.getParameter("contentType");
 			if (contentType != null)
@@ -57,7 +68,7 @@ public class KeyValueServlet extends HttpServlet {
 				// decode B64 to bytes
 				respondWith(response, Base64.toBytes(result));
 			else
-				respondWith(response, result);
+				respondWith(response, (result == null ? "" : result));
 		} else if ("put".equals(action)) {
 			if (value == null)
 				throw new ServletException("value parameter must not be null");
