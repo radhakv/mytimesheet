@@ -35,8 +35,10 @@ public class LoginServlet extends HttpServlet {
 		try {
 			String key = req.getParameter("key");
 			String password = req.getParameter("password");
-			if (key == null || !key.startsWith(AUTHENTICATED))
-				throw new RuntimeException(
+			if (key == null)
+				throw new ServletException("must specify a key parameter");
+			if (!key.startsWith(AUTHENTICATED))
+				throw new ServletException(
 						"login only deals with keys that start with '"
 								+ AUTHENTICATED + "'");
 			String theKey = key.substring(AUTHENTICATED.length());
@@ -50,6 +52,7 @@ public class LoginServlet extends HttpServlet {
 			else
 				throw new ServletException(
 						"password incorrect. Go back a page and attempt login again.");
+			resp.getOutputStream().println("logged in");
 		} catch (ServletException e) {
 			resp.getOutputStream().println(e.getMessage());
 		}
