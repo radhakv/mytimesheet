@@ -9,6 +9,6 @@ public class ApplicationInjectorModule extends AbstractModule {
 	protected void configure() {
 		bind(KeyValueService.class).to(KeyValueServiceImpl.class).in(
 				Scopes.SINGLETON);
+		bind(Administration.class).in(Scopes.SINGLETON);
 	}
-
 }

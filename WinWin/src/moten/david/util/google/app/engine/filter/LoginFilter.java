@@ -25,18 +25,19 @@ public class LoginFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		String url = httpRequest.getRequestURI();
+		if (httpRequest.getQueryString() != null)
+			url += "?" + httpRequest.getQueryString();
 		if (userService.getCurrentUser() != null) {
 			if ("true".equals(request.getParameter("logout")))
 				((HttpServletResponse) response).sendRedirect(userService
-						.createLogoutURL(((HttpServletRequest) request)
-								.getRequestURI()));
+						.createLogoutURL(url));
 			else
 				chain.doFilter(request, response);
 		} else if (response instanceof HttpServletResponse)
 			((HttpServletResponse) response).sendRedirect(userService
-					.createLoginURL(((HttpServletRequest) request)
-							.getRequestURI()));
+					.createLoginURL(url));
 		else
 
 			throw new ServletException(

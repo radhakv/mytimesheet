@@ -1,5 +1,9 @@
 package moten.david.kv;
 
+import static moten.david.kv.Constants.AUTHENTICATED;
+import static moten.david.kv.Constants.SECURE;
+import static moten.david.kv.Constants.SECURE_PASSWORD;
+
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -19,7 +23,7 @@ public class KeyValueServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		if ("true".equalsIgnoreCase(config.getInitParameter("secure")))
+		if ("true".equalsIgnoreCase(config.getInitParameter(SECURE)))
 			secure = true;
 	}
 
@@ -27,6 +31,8 @@ public class KeyValueServlet extends HttpServlet {
 
 	@Inject
 	private KeyValueService keyValueService;
+	@Inject
+	private Administration administration;
 
 	public KeyValueServlet() {
 		ApplicationInjector.getInjector().injectMembers(this);
@@ -52,9 +58,12 @@ public class KeyValueServlet extends HttpServlet {
 			action = new String(action.getBytes(), request
 					.getCharacterEncoding());
 		}
-		if (!secure && key.startsWith("secure"))
-			throw new ServletException(
-					"as key starts with 'secure' you must use a secure servlet");
+		// there are some key patterns that cause special behaviour
+		// key starts with secure
+		checkSecure(key);
+		checkSecurePassword(key);
+		checkAuthenticated(key, request);
+
 		if ("get".equals(action)) {
 			String contentType = request.getParameter("contentType");
 			if (contentType != null)
@@ -82,6 +91,45 @@ public class KeyValueServlet extends HttpServlet {
 		} else
 			throw new ServletException(
 					"action parameter must be either 'get' or 'put'");
+	}
+
+	private void checkAuthenticated(String key, HttpServletRequest request)
+			throws ServletException {
+		// key starts with authenticate
+		// this one is used to allow authentication but bypassing the google
+		// apps authentication because it requires cookies and Google Earth for
+		// instance do not allow cookies
+		if (key.startsWith(AUTHENTICATED)
+				&& key.length() > AUTHENTICATED.length()) {
+			if (!request.getProtocol().equals("https")) {
+				throw new ServletException(
+						"as this key starts with '"
+								+ AUTHENTICATED
+								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
+			}
+			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
+				throw new ServletException("as this key starts with '"
+						+ AUTHENTICATED + "' you must login to use it");
+			}
+		}
+	}
+
+	private void checkSecurePassword(String key) throws ServletException {
+		// key starts with securePassword
+		if (key.startsWith(SECURE_PASSWORD)
+				&& !administration.currentUserIsAdministrator())
+			throw new ServletException(
+					"as key starts with '"
+							+ SECURE_PASSWORD
+							+ "' you ("
+							+ administration.getCurrentUser()
+							+ ")  must be on the administrator list to amend or access this value");
+	}
+
+	private void checkSecure(String key) throws ServletException {
+		if (!secure && key.startsWith(SECURE))
+			throw new ServletException("as key starts with '" + SECURE
+					+ "' you must use a secure servlet");
 	}
 
 	private void respondWith(HttpServletResponse response, String value)
