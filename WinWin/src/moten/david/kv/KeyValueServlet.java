@@ -115,8 +115,9 @@ public class KeyValueServlet extends HttpServlet {
 								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
 			}
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
-				throw new ServletException("as this key starts with '"
-						+ AUTHENTICATED + "' you must login to use it");
+				throw new ServletException("<html><p>as this key starts with '"
+						+ AUTHENTICATED + "' you must <a href=\"login.jsp?key="
+						+ key + "\">login</a> to use it</p></html>");
 			}
 		}
 	}
