@@ -10,11 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.google.inject.Inject;
 
 public class LoginServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 930288771386646504L;
+
+	private static Logger log = Logger.getLogger(LoginServlet.class);
 
 	@Inject
 	private KeyValueService keyValueService;
@@ -52,7 +56,17 @@ public class LoginServlet extends HttpServlet {
 			else
 				throw new ServletException(
 						"password incorrect. Go back a page and attempt login again.");
-			resp.getOutputStream().println("logged in");
+			// having succeeded logging in, redirect to the originally requested
+			// page
+			String redirectTo = req.getParameter("continue");
+			if (redirectTo != null) {
+				// resp.getOutputStream().println("redirecting to " +
+				// redirectTo);
+				// resp.getOutputStream().flush();
+				resp.sendRedirect(redirectTo);
+			} else
+				// no redirect specified so let user know that login worked
+				resp.getOutputStream().print("logged in ok");
 		} catch (ServletException e) {
 			resp.getOutputStream().println(e.getMessage());
 		}
