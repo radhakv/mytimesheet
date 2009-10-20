@@ -68,7 +68,11 @@ public class KeyValueServlet extends HttpServlet {
 			// key starts with secure
 			checkSecure(key);
 			checkSecurePassword(key);
-			checkAuthenticated(key, request);
+			String loginUrl = checkAuthenticated(key, request);
+			if (loginUrl != null) {
+				response.sendRedirect(loginUrl);
+				return;
+			}
 
 			if ("get".equals(action)) {
 				String contentType = request.getParameter("contentType");
@@ -104,7 +108,16 @@ public class KeyValueServlet extends HttpServlet {
 		}
 	}
 
-	private void checkAuthenticated(String key, HttpServletRequest request)
+	/**
+	 * if authenticated or authentication not required returns null otherwise
+	 * returns the login url
+	 * 
+	 * @param key
+	 * @param request
+	 * @return
+	 * @throws ServletException
+	 */
+	private String checkAuthenticated(String key, HttpServletRequest request)
 			throws ServletException {
 		// key starts with authenticate
 		// this one is used to allow authentication but bypassing the google
@@ -120,24 +133,23 @@ public class KeyValueServlet extends HttpServlet {
 			}
 
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
+				// not authenticated
 				try {
-					throw new ServletException(
-							"<html><p>as this key starts with '"
-									+ AUTHENTICATED
-									+ "' you must <a href=\"login.jsp?key="
-									+ key + encodeParameter("action", request)
-									+ encodeParameter("value", request)
-									+ encodeParameter("contentType", request)
-									+ encodeParameter("filename", request)
-									+ encodeParameter("decodeB64", request)
-									+ "&continue="
-									+ URLEncoder.encode(getUrl(request), UTF_8)
-									+ "\">login</a> to use it</p></html>");
+					String loginUrl = "/login.jsp?key=" + key
+							+ encodeParameter("action", request)
+							+ encodeParameter("value", request)
+							+ encodeParameter("contentType", request)
+							+ encodeParameter("filename", request)
+							+ encodeParameter("decodeB64", request)
+							+ "&continue="
+							+ URLEncoder.encode(getUrl(request), UTF_8);
+					return loginUrl;
 				} catch (UnsupportedEncodingException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
+		return null;
 	}
 
 	private String encodeParameter(String name, HttpServletRequest request) {
