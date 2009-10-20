@@ -22,6 +22,7 @@ public class TestPost {
 	private static final String CONTENT_TYPE_ENCODED_KMZ = "application%2Fvnd.google-earth.kmz";
 	private static final String GET_URL = "http://win-win.appspot.com/kv?key=amsaCraftpic&action=get&contentType=application%2Fvnd.google-earth.kmz&decodeB64=true&filename=craftpic.kmz";
 
+	// https://win-win.appspot.com/kv?key=authenticatedCraftpic&action=get&contentType=application%2Fvnd.google-earth.kmz&decodeB64=true&filename=craftpic.kmz
 	private String encode(String s) {
 		try {
 			return URLEncoder.encode(s, UTF_8);
@@ -39,7 +40,7 @@ public class TestPost {
 		postKeyValue("authenticatedCraftpic", bytes.toString(), false);
 	}
 
-	// @Test
+	@Test
 	public void testPostLarge() throws IOException {
 		InputStream is = getClass().getResourceAsStream("example.kml.zip");
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
