@@ -121,18 +121,15 @@ public class KeyValueServlet extends HttpServlet {
 
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
 				try {
-					String actionParameter = "&action="
-							+ request.getParameter("action");
-					String valueParameter = "";
-					if (request.getParameter("value") != null)
-						valueParameter = "&value="
-								+ URLEncoder.encode(request
-										.getParameter("value"), UTF_8);
 					throw new ServletException(
 							"<html><p>as this key starts with '"
 									+ AUTHENTICATED
 									+ "' you must <a href=\"login.jsp?key="
-									+ key + actionParameter + valueParameter
+									+ key + encodeParameter("action", request)
+									+ encodeParameter("value", request)
+									+ encodeParameter("contentType", request)
+									+ encodeParameter("filename", request)
+									+ encodeParameter("decodeB64", request)
 									+ "&continue="
 									+ URLEncoder.encode(getUrl(request), UTF_8)
 									+ "\">login</a> to use it</p></html>");
@@ -141,6 +138,19 @@ public class KeyValueServlet extends HttpServlet {
 				}
 			}
 		}
+	}
+
+	private String encodeParameter(String name, HttpServletRequest request) {
+		String s = "";
+		if (request.getParameter(name) != null)
+			try {
+				s = "&" + name + "="
+						+ URLEncoder.encode(request.getParameter(name), UTF_8);
+
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		return s;
 	}
 
 	private String getUrl(HttpServletRequest request) {
