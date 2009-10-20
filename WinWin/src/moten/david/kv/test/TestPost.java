@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.junit.Test;
@@ -34,10 +36,10 @@ public class TestPost {
 		StreamUtils.copy(getClass().getResourceAsStream("example-short.kml"),
 				bytes);
 		System.out.println(bytes.toString());
-		postKeyValue("amsaCraftpic", bytes.toString(), false);
+		postKeyValue("authenticatedCraftpic", bytes.toString(), false);
 	}
 
-	@Test
+	// @Test
 	public void testPostLarge() throws IOException {
 		InputStream is = getClass().getResourceAsStream("example.kml.zip");
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -45,7 +47,7 @@ public class TestPost {
 		System.out.println("bytes size=" + bytes.size());
 		String value = Base64.toString(bytes.toByteArray());
 		System.out.println("b64 size=" + value.length());
-		postKeyValue("amsaCraftpic", value);
+		postKeyValue("authenticatedCraftpic", value);
 	}
 
 	private void postKeyValue(String key, String value) {
@@ -69,40 +71,77 @@ public class TestPost {
 
 	private void postKeyValue(String key, String value, boolean append) {
 		try {
-			URL url = new URL("http://win-win.appspot.com/kv");
-			URLConnection urlConn = url.openConnection();
-			// URL connection channel.
-			urlConn = url.openConnection();
-			// Let the run-time system (RTS) know that we want input.
-			urlConn.setDoInput(true);
-			// Let the RTS know that we want to do output.
-			urlConn.setDoOutput(true);
-			// No caching, we want the real thing.
-			urlConn.setUseCaches(false);
-			// Specify the content type.
-			urlConn.setRequestProperty("Content-Type",
-					"application/x-www-form-urlencoded;charset=UTF-8");
-			// Send POST output.
-			OutputStreamWriter out = new OutputStreamWriter(urlConn
-					.getOutputStream());
 			final String eq = "=";
 			final String and = "&";
-			final String encodedValue = encode(value);
-			System.out.println("encValue size=" + encodedValue.length());
-			String content = encode("action") + eq
-					+ encode((append ? "append" : "put")) + and + encode("key")
-					+ eq + encode(key) + and + encode("value") + eq
-					+ encodedValue;
-			out.write(content);
-			out.flush();
-			// Get response data.
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					urlConn.getInputStream()));
-			String str;
-			while (null != ((str = br.readLine()))) {
-				System.out.println(str);
+			List<String> cookies;
+			{
+				URL url = new URL("https://win-win.appspot.com/login");
+				URLConnection urlConn = url.openConnection();
+				// URL connection channel.
+				urlConn = url.openConnection();
+				// Let the run-time system (RTS) know that we want input.
+				urlConn.setDoInput(true);
+				// Let the RTS know that we want to do output.
+				urlConn.setDoOutput(true);
+				// No caching, we want the real thing.
+				urlConn.setUseCaches(false);
+				// Specify the content type.
+				urlConn.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded;charset=UTF-8");
+				// Send POST output.
+				OutputStreamWriter out = new OutputStreamWriter(urlConn
+						.getOutputStream());
+				out.write(encode("key") + eq + encode(key) + and
+						+ encode("password") + eq + encode("barmybarmy"));
+				out.flush();
+				// Get response data.
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						urlConn.getInputStream()));
+				String str;
+				while (null != ((str = br.readLine()))) {
+					System.out.println(str);
+				}
+				br.close();
+				Map<String, List<String>> headers = urlConn.getHeaderFields();
+				cookies = headers.get("Set-Cookie");
+				System.out.println(cookies);
 			}
-			br.close();
+			{
+				URL url = new URL("https://win-win.appspot.com/kv");
+				URLConnection urlConn = url.openConnection();
+				// URL connection channel.
+				urlConn = url.openConnection();
+				// Let the run-time system (RTS) know that we want input.
+				urlConn.setDoInput(true);
+				// Let the RTS know that we want to do output.
+				urlConn.setDoOutput(true);
+				// No caching, we want the real thing.
+				urlConn.setUseCaches(false);
+				// Specify the content type.
+				urlConn.setRequestProperty("Content-Type",
+						"application/x-www-form-urlencoded;charset=UTF-8");
+				urlConn.setRequestProperty("Cookie", cookies.get(0));
+				// Send POST output.
+				OutputStreamWriter out = new OutputStreamWriter(urlConn
+						.getOutputStream());
+
+				final String encodedValue = encode(value);
+				System.out.println("encValue size=" + encodedValue.length());
+				String content = encode("action") + eq
+						+ encode((append ? "append" : "put")) + and
+						+ encode("key") + eq + encode(key) + and
+						+ encode("value") + eq + encodedValue;
+				out.write(content);
+				out.flush();
+				// Get response data.
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						urlConn.getInputStream()));
+				String str;
+				while (null != ((str = br.readLine()))) {
+					System.out.println(str);
+				}
+				br.close();
+			}
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

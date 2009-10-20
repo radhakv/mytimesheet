@@ -5,6 +5,8 @@ import static moten.david.kv.Constants.SECURE;
 import static moten.david.kv.Constants.SECURE_PASSWORD;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,6 +20,8 @@ import moten.david.kv.test.Base64;
 import com.google.inject.Inject;
 
 public class KeyValueServlet extends HttpServlet {
+
+	private static final String UTF_8 = "UTF-8";
 
 	private boolean secure;
 
@@ -114,12 +118,37 @@ public class KeyValueServlet extends HttpServlet {
 								+ AUTHENTICATED
 								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
 			}
+
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
-				throw new ServletException("<html><p>as this key starts with '"
-						+ AUTHENTICATED + "' you must <a href=\"login.jsp?key="
-						+ key + "\">login</a> to use it</p></html>");
+				try {
+					String actionParameter = "&action="
+							+ request.getParameter("action");
+					String valueParameter = "";
+					if (request.getParameter("value") != null)
+						valueParameter = "&value="
+								+ URLEncoder.encode(request
+										.getParameter("value"), UTF_8);
+					throw new ServletException(
+							"<html><p>as this key starts with '"
+									+ AUTHENTICATED
+									+ "' you must <a href=\"login.jsp?key="
+									+ key + actionParameter + valueParameter
+									+ "&continue="
+									+ URLEncoder.encode(getUrl(request), UTF_8)
+									+ "\">login</a> to use it</p></html>");
+				} catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
+	}
+
+	private String getUrl(HttpServletRequest request) {
+
+		String url = request.getScheme() + ":/" + request.getRequestURI();
+		if (request.getQueryString() != null)
+			url += "?" + request.getQueryString();
+		return url;
 	}
 
 	private void checkSecurePassword(String key) throws ServletException {
