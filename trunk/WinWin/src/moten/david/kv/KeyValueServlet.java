@@ -1,8 +1,8 @@
 package moten.david.kv;
 
 import static moten.david.kv.Constants.AUTHENTICATED;
+import static moten.david.kv.Constants.AUTHENTICATION;
 import static moten.david.kv.Constants.SECURE;
-import static moten.david.kv.Constants.SECURE_PASSWORD;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -22,8 +22,6 @@ import com.google.inject.Inject;
 public class KeyValueServlet extends HttpServlet {
 
 	private static final String HTTPS = "https";
-
-	private static final String UTF_8 = "UTF-8";
 
 	private boolean secure;
 
@@ -73,10 +71,9 @@ public class KeyValueServlet extends HttpServlet {
 				// there are some key patterns that cause special behaviour
 				// key starts with secure
 				checkSecure(key);
-				checkSecurePassword(key);
-				String loginUrl = checkAuthenticated(key, request);
-				if (loginUrl != null) {
-					response.sendRedirect(loginUrl);
+				checkAuthentication(key);
+				if (!checkAuthenticated(key, request)) {
+					requestAuthentication(response);
 					return;
 				}
 			}
@@ -84,10 +81,9 @@ public class KeyValueServlet extends HttpServlet {
 			String copyTo = request.getParameter("copyTo");
 			if (copyTo != null) {
 				checkSecure(copyTo);
-				checkSecurePassword(copyTo);
-				String loginUrl = checkAuthenticated(copyTo, request);
-				if (loginUrl != null) {
-					response.sendRedirect(loginUrl);
+				checkAuthentication(copyTo);
+				if (!checkAuthenticated(copyTo, request)) {
+					requestAuthentication(response);
 					return;
 				}
 			}
@@ -132,6 +128,11 @@ public class KeyValueServlet extends HttpServlet {
 		}
 	}
 
+	private void requestAuthentication(HttpServletResponse response) {
+		response.setStatus(401);
+		response.setHeader("WWW-Authenticate", "Basic realm=\"Please login\"");
+	}
+
 	/**
 	 * if authenticated or authentication not required returns null otherwise
 	 * returns the login url
@@ -141,12 +142,13 @@ public class KeyValueServlet extends HttpServlet {
 	 * @return
 	 * @throws ServletException
 	 */
-	private String checkAuthenticated(String key, HttpServletRequest request)
+	private boolean checkAuthenticated(String key, HttpServletRequest request)
 			throws ServletException {
 		// key starts with authenticate
 		// this one is used to allow authentication but bypassing the google
 		// apps authentication because it requires cookies and Google Earth for
 		// instance do not allow cookies
+		boolean authorized = true;
 		if (key.startsWith(AUTHENTICATED)
 				&& key.length() > AUTHENTICATED.length()) {
 			if (!request.getScheme().equals(HTTPS)) {
@@ -157,62 +159,31 @@ public class KeyValueServlet extends HttpServlet {
 								+ AUTHENTICATED
 								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
 			}
-
-			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
-				// not authenticated
-				try {
-					String loginUrl = "/login.jsp?"
-							+ encodeParameter("key", request, true)
-							+ encodeParameter("action", request)
-							+ encodeParameter("value", request)
-							+ encodeParameter("copyTo", request)
-							+ encodeParameter("contentType", request)
-							+ encodeParameter("filename", request)
-							+ encodeParameter("decodeB64", request)
-							+ "&continue="
-							+ URLEncoder.encode(getUrl(request), UTF_8);
-					return loginUrl;
-				} catch (UnsupportedEncodingException e) {
-					throw new RuntimeException(e);
-				}
+			String authorization = request.getHeader("Authorization");
+			authorized = false;
+			if (authorization != null) {
+				authorization = authorization.substring(6);
+				String usernameColonPassword = new String(Base64
+						.toBytes(authorization));
+				String coreKey = key.substring(AUTHENTICATED.length());
+				String expectedUsernameColonPassword = keyValueService
+						.get(AUTHENTICATION + coreKey);
+				if (usernameColonPassword.equals(expectedUsernameColonPassword))
+					authorized = true;
+				// throw new ServletException(usernameColonPassword + "=="
+				// + expectedUsernameColonPassword);
 			}
 		}
-		return null;
+		return authorized;
 	}
 
-	private String encodeParameter(String name, HttpServletRequest request) {
-		return encodeParameter(name, request, false);
-	}
-
-	private String encodeParameter(String name, HttpServletRequest request,
-			boolean isFirst) {
-		String s = "";
-		if (request.getParameter(name) != null)
-			try {
-				s = (isFirst ? "" : "&") + name + "="
-						+ URLEncoder.encode(request.getParameter(name), UTF_8);
-
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
-		return s;
-	}
-
-	private String getUrl(HttpServletRequest request) {
-
-		String url = request.getScheme() + ":/" + request.getRequestURI();
-		if (request.getQueryString() != null)
-			url += "?" + request.getQueryString();
-		return url;
-	}
-
-	private void checkSecurePassword(String key) throws ServletException {
+	private void checkAuthentication(String key) throws ServletException {
 		// key starts with securePassword
-		if (key.startsWith(SECURE_PASSWORD)
+		if (key.startsWith(AUTHENTICATION)
 				&& !administration.currentUserIsAdministrator())
 			throw new ServletException(
 					"as key starts with '"
-							+ SECURE_PASSWORD
+							+ AUTHENTICATION
 							+ "' you ("
 							+ administration.getCurrentUser()
 							+ ")  must be on the administrator list to amend or access this value");
@@ -236,4 +207,9 @@ public class KeyValueServlet extends HttpServlet {
 			os.write(bytes);
 		os.close();
 	}
+
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		System.out.println(URLEncoder.encode(":", "UTF-8"));
+	}
+
 }

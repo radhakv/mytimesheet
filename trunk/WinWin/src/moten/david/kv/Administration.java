@@ -34,11 +34,17 @@ public class Administration {
 	}
 
 	public boolean currentUserIsAdministrator() {
-		return administratorEmails.contains(userService.getCurrentUser()
-				.getEmail());
+		if (userService.getCurrentUser() == null)
+			return false;
+		else
+			return administratorEmails.contains(userService.getCurrentUser()
+					.getEmail());
 	}
 
 	public String getCurrentUser() {
-		return userService.getCurrentUser().getEmail();
+		if (userService.getCurrentUser() == null)
+			return null;
+		else
+			return userService.getCurrentUser().getEmail();
 	}
 }
