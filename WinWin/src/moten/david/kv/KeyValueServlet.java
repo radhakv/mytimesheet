@@ -21,6 +21,8 @@ import com.google.inject.Inject;
 
 public class KeyValueServlet extends HttpServlet {
 
+	private static final String HTTPS = "https";
+
 	private static final String UTF_8 = "UTF-8";
 
 	private boolean secure;
@@ -64,14 +66,27 @@ public class KeyValueServlet extends HttpServlet {
 				action = new String(action.getBytes(), request
 						.getCharacterEncoding());
 			}
-			// there are some key patterns that cause special behaviour
-			// key starts with secure
-			checkSecure(key);
-			checkSecurePassword(key);
-			String loginUrl = checkAuthenticated(key, request);
-			if (loginUrl != null) {
-				response.sendRedirect(loginUrl);
-				return;
+			{
+				// there are some key patterns that cause special behaviour
+				// key starts with secure
+				checkSecure(key);
+				checkSecurePassword(key);
+				String loginUrl = checkAuthenticated(key, request);
+				if (loginUrl != null) {
+					response.sendRedirect(loginUrl);
+					return;
+				}
+			}
+
+			String copyTo = request.getParameter("copyTo");
+			if (copyTo != null) {
+				checkSecure(copyTo);
+				checkSecurePassword(copyTo);
+				String loginUrl = checkAuthenticated(copyTo, request);
+				if (loginUrl != null) {
+					response.sendRedirect(loginUrl);
+					return;
+				}
 			}
 
 			if ("get".equals(action)) {
@@ -100,6 +115,12 @@ public class KeyValueServlet extends HttpServlet {
 							"value parameter must not be null");
 				keyValueService.append(key, value);
 				respondWith(response, "ok");
+			} else if ("copy".equals(action)) {
+				if (copyTo == null)
+					throw new ServletException(
+							"copyTo parameter must not be null when action is 'copy'");
+				keyValueService.copy(key, copyTo);
+				respondWith(response, "ok");
 			} else
 				throw new ServletException(
 						"action parameter must be either 'get' or 'put'");
@@ -125,9 +146,11 @@ public class KeyValueServlet extends HttpServlet {
 		// instance do not allow cookies
 		if (key.startsWith(AUTHENTICATED)
 				&& key.length() > AUTHENTICATED.length()) {
-			if (!request.getScheme().equals("https")) {
+			if (!request.getScheme().equals(HTTPS)) {
 				throw new ServletException(
-						"as this key starts with '"
+						"as the key "
+								+ key
+								+ " starts with '"
 								+ AUTHENTICATED
 								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
 			}
@@ -135,9 +158,11 @@ public class KeyValueServlet extends HttpServlet {
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
 				// not authenticated
 				try {
-					String loginUrl = "/login.jsp?key=" + key
+					String loginUrl = "/login.jsp?key="
+							+ encodeParameter("key", request)
 							+ encodeParameter("action", request)
 							+ encodeParameter("value", request)
+							+ encodeParameter("copyTo", request)
 							+ encodeParameter("contentType", request)
 							+ encodeParameter("filename", request)
 							+ encodeParameter("decodeB64", request)

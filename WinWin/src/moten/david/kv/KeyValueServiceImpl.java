@@ -24,7 +24,10 @@ public class KeyValueServiceImpl implements KeyValueService {
 		try {
 			Entity valueEntity = datastore.get(KeyFactory.createKey(
 					KV_ENTITY_TYPE, key));
-			Text text = (Text) valueEntity.getProperty(ENTITY_VALUE);
+			Object value = valueEntity.getProperty(ENTITY_VALUE);
+			if (value == null)
+				return null;
+			Text text = (Text) value;
 			if (text == null)
 				return null;
 			else
@@ -37,7 +40,10 @@ public class KeyValueServiceImpl implements KeyValueService {
 	@Override
 	public void put(String key, String value) {
 		Entity entity = new Entity(KV_ENTITY_TYPE, key);
-		entity.setProperty(ENTITY_VALUE, new Text(value));
+		if (value == null)
+			entity.setProperty(ENTITY_VALUE, null);
+		else
+			entity.setProperty(ENTITY_VALUE, new Text(value));
 		datastore.put(entity);
 	}
 
@@ -49,6 +55,11 @@ public class KeyValueServiceImpl implements KeyValueService {
 		else {
 			put(key, s + value);
 		}
+	}
+
+	@Override
+	public void copy(String fromKey, String toKey) {
+		put(toKey, get(fromKey));
 	}
 
 }

@@ -6,4 +6,6 @@ public interface KeyValueService {
 	void put(String key, String value);
 
 	void append(String key, String value);
+
+	void copy(String fromKey, String toKey);
 }
