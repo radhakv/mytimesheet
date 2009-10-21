@@ -1,7 +1,7 @@
 package moten.david.kv;
 
 public class Constants {
-	public static final String SECURE_PASSWORD = "securePassword";
+	public static final String AUTHENTICATION = "authentication";
 
 	public static final String SECURE = "secure";
 

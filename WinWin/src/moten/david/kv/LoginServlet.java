@@ -1,7 +1,7 @@
 package moten.david.kv;
 
 import static moten.david.kv.Constants.AUTHENTICATED;
-import static moten.david.kv.Constants.SECURE_PASSWORD;
+import static moten.david.kv.Constants.AUTHENTICATION;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ public class LoginServlet extends HttpServlet {
 						"login only deals with keys that start with '"
 								+ AUTHENTICATED + "'");
 			String theKey = key.substring(AUTHENTICATED.length());
-			String passwordKey = SECURE_PASSWORD + theKey;
+			String passwordKey = AUTHENTICATION + theKey;
 			String passwordFromService = keyValueService.get(passwordKey);
 			if (passwordFromService == null)
 				throw new ServletException(
