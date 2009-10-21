@@ -158,8 +158,8 @@ public class KeyValueServlet extends HttpServlet {
 			if (!Boolean.TRUE.equals(request.getSession().getAttribute(key))) {
 				// not authenticated
 				try {
-					String loginUrl = "/login.jsp?key="
-							+ encodeParameter("key", request)
+					String loginUrl = "/login.jsp?"
+							+ encodeParameter("key", request, true)
 							+ encodeParameter("action", request)
 							+ encodeParameter("value", request)
 							+ encodeParameter("copyTo", request)
@@ -178,10 +178,15 @@ public class KeyValueServlet extends HttpServlet {
 	}
 
 	private String encodeParameter(String name, HttpServletRequest request) {
+		return encodeParameter(name, request, false);
+	}
+
+	private String encodeParameter(String name, HttpServletRequest request,
+			boolean isFirst) {
 		String s = "";
 		if (request.getParameter(name) != null)
 			try {
-				s = "&" + name + "="
+				s = (isFirst ? "" : "&") + name + "="
 						+ URLEncoder.encode(request.getParameter(name), UTF_8);
 
 			} catch (UnsupportedEncodingException e) {
