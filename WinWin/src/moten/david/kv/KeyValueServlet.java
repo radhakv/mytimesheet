@@ -56,13 +56,16 @@ public class KeyValueServlet extends HttpServlet {
 		try {
 			String key = request.getParameter("key");
 			String value = request.getParameter("value");
+			String action = request.getParameter("action");
 			if (key == null)
 				throw new ServletException("key parameter must not be null");
-			String action = request.getParameter("action");
+			if (action == null)
+				throw new ServletException("action parameter must not be null");
 			if (request.getCharacterEncoding() != null) {
 				key = new String(key.getBytes(), request.getCharacterEncoding());
-				value = new String(value.getBytes(), request
-						.getCharacterEncoding());
+				if (value != null)
+					value = new String(value.getBytes(), request
+							.getCharacterEncoding());
 				action = new String(action.getBytes(), request
 						.getCharacterEncoding());
 			}
