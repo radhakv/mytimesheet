@@ -12,6 +12,6 @@ Google App Engine quotas limit an individual upload to <10MB and for a HTTP Post
 Given that updating a key can involve multiple uploads (via _put_ and _append_), you may want to update a temporary key in this way and then use the _copy_ method to move the information to the key you want to update.
 
 = Special Keys =
-  * starts with _authenticated_
-  * starts with _authentication_
+== starts with _authenticated_ ==
+== starts with _authentication_ ==
   * starts with _secure_
