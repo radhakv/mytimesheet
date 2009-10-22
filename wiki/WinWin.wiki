@@ -18,5 +18,5 @@ A call to get/put/append/copy may bring about an authentication request in these
 Administrator authentication via Google Apps login
   * key starts with _authentication_
   * key starts with _secure_
-Basic authentication (optionally over https)
+Basic Http authentication (optionally over https) prompting for a username and password
   * key starts with _authenticated_
