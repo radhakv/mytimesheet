@@ -16,9 +16,7 @@ Given that updating a key can involve multiple uploads (via _put_ and _append_),
 A call to get/put/append/copy may bring about an authentication request in these circumstances:
 
 Administrator authentication via Google Apps login
-* key starts with _authentication_
-* key starts with _secure_
+  * key starts with _authentication_
+  * key starts with _secure_
 Basic authentication (optionally over https)
-* key starts with _authenticated_
-
-
+  * key starts with _authenticated_
