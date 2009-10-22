@@ -2,14 +2,11 @@
 
 = Introduction =
 
-WinWin provides key-value pair storage. The api is
+WinWin provides key-value pair storage with optional authentication. The api is
   * get
   * put
   * append
   * copy
-Google App Engine quotas limit an individual upload to <10MB and for a HTTP Post parameter to 200K. The append api method is useful in this case. 
+Google App Engine quotas limit an individual upload to <10MB and for a HTTP Post parameter to 200K. The *append* method is useful in this case. 
 
-Given that updating a key can involve multiple uploads (via put and append), you may want to update a temporary key in this way and then use the copy method to move the information to the key you want to update.
-
-
-= Details =
+Given that updating a key can involve multiple uploads (via *put* and *append*), you may want to update a temporary key in this way and then use the *copy* method to move the information to the key you want to update.
