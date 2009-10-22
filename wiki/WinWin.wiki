@@ -1,0 +1,18 @@
+#summary WinWin Documentation
+
+= Introduction =
+
+WinWin provides key-value pair storage. The api is
+* get
+* put
+* append
+* copy
+Google App Engine quotas limit an individual upload to <10MB and for a HTTP Post parameter to 200K. The append api method is usefule f
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
