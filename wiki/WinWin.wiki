@@ -1,4 +1,4 @@
-#summary WinWin Documentation
+#summary Documentation of the WinWin key value storage and retrieval system
 
 = Introduction =
 
