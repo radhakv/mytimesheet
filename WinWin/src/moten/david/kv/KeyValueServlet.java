@@ -7,6 +7,7 @@ import static moten.david.kv.Constants.SECURE;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -128,9 +129,16 @@ public class KeyValueServlet extends HttpServlet {
 		}
 	}
 
-	private void requestAuthentication(HttpServletResponse response) {
+	private void requestAuthentication(HttpServletResponse response)
+			throws IOException {
 		response.setStatus(401);
 		response.setHeader("WWW-Authenticate", "Basic realm=\"Please login\"");
+		response.setHeader("Date", new Date().toString());
+		response.setHeader("Content-Type", "text/html");
+		response
+				.getOutputStream()
+				.println(
+						"<html><head><title>Error</title></head><body><h1>401 Unauthorized</h1></body></html>");
 	}
 
 	/**
@@ -160,18 +168,23 @@ public class KeyValueServlet extends HttpServlet {
 								+ "' you must use https protocol rather than http. Just change the address you are using so it starts with https://");
 			}
 			String authorization = request.getHeader("Authorization");
+			String coreKey = key.substring(AUTHENTICATED.length());
+			String expectedUsernameColonPassword = keyValueService
+					.get(AUTHENTICATION + coreKey);
 			authorized = false;
 			if (authorization != null) {
 				authorization = authorization.substring(6);
 				String usernameColonPassword = new String(Base64
 						.toBytes(authorization));
-				String coreKey = key.substring(AUTHENTICATED.length());
-				String expectedUsernameColonPassword = keyValueService
-						.get(AUTHENTICATION + coreKey);
+
 				if (usernameColonPassword.equals(expectedUsernameColonPassword))
 					authorized = true;
-				// throw new ServletException(usernameColonPassword + "=="
-				// + expectedUsernameColonPassword);
+			}
+			if (!authorized) {
+				String usernameColonPassword = request.getParameter("username")
+						+ ":" + request.getParameter("password");
+				if (usernameColonPassword.equals(expectedUsernameColonPassword))
+					authorized = true;
 			}
 		}
 		return authorized;
