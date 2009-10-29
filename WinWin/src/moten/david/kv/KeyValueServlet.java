@@ -125,7 +125,9 @@ public class KeyValueServlet extends HttpServlet {
 				throw new ServletException(
 						"action parameter must be either 'get' or 'put'");
 		} catch (ServletException e) {
+			log(e.getMessage(), e);
 			respondWith(response, e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
