@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_eDjDcL6pEd6Q2461vxOKuA" type="UMLActivity" name="KeyValueServlet.umlact" measurementUnit="Pixel">
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_eDjDcb6pEd6Q2461vxOKuA"/>
+  <element xmi:type="uml:Package" href="KeyValueServlet.uml#_d9_1Eb6pEd6Q2461vxOKuA"/>
+</notation:Diagram>

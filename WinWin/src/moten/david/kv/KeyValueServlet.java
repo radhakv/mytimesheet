@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import moten.david.kv.test.Base64;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64OutputStream;
 
 import com.google.inject.Inject;
 
@@ -98,10 +99,15 @@ public class KeyValueServlet extends HttpServlet {
 				if (filename != null)
 					response.setHeader("Content-Disposition",
 							"inline; filename=" + filename);
-				if ("true".equalsIgnoreCase(request.getParameter("decodeB64")))
+
+				if ("true".equalsIgnoreCase(request.getParameter("decodeB64"))) {
 					// decode B64 to bytes
-					respondWith(response, Base64.toBytes(result));
-				else
+					Base64OutputStream os = new Base64OutputStream(response
+							.getOutputStream(), false);
+					if (result != null)
+						os.write(result.getBytes());
+					os.close();
+				} else
 					respondWith(response, (result == null ? "" : result));
 			} else if ("put".equals(action)) {
 				if (value == null)
@@ -176,9 +182,9 @@ public class KeyValueServlet extends HttpServlet {
 			authorized = false;
 			if (authorization != null) {
 				authorization = authorization.substring(6);
-				String usernameColonPassword = new String(Base64
-						.toBytes(authorization));
-
+				String usernameColonPassword;
+				Base64 base64 = new Base64();
+				usernameColonPassword = new String(base64.decode(authorization));
 				if (usernameColonPassword.equals(expectedUsernameColonPassword))
 					authorized = true;
 			}
