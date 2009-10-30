@@ -99,7 +99,7 @@ public class KeyValueServlet extends HttpServlet {
 				if (filename != null)
 					response.setHeader("Content-Disposition",
 							"inline; filename=" + filename);
-
+				setNoCacheParameters(response);
 				if ("true".equalsIgnoreCase(request.getParameter("decodeB64"))) {
 					// decode B64 to bytes
 					Base64OutputStream os = new Base64OutputStream(response
@@ -135,6 +135,21 @@ public class KeyValueServlet extends HttpServlet {
 			respondWith(response, e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	private void setNoCacheParameters(HttpServletResponse response) {
+		// Set to expire far in the past.
+		response.setHeader("Expires", "-1");
+
+		// Set standard HTTP/1.1 no-cache headers.
+		response.setHeader("Cache-Control",
+				"no-store, no-cache, must-revalidate");
+
+		// Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+		response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+
+		// Set standard HTTP/1.0 no-cache header.
+		response.setHeader("Pragma", "no-cache");
 	}
 
 	private void requestAuthentication(HttpServletResponse response)
