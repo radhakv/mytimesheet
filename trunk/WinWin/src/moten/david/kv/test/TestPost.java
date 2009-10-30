@@ -17,6 +17,8 @@ import java.util.Map;
 import org.apache.log4j.lf5.util.StreamUtils;
 import org.junit.Test;
 
+import com.google.appengine.repackaged.com.google.common.util.Base64;
+
 public class TestPost {
 	private static final String UTF_8 = "UTF-8";
 	private static final String CONTENT_TYPE_ENCODED_KMZ = "application%2Fvnd.google-earth.kmz";
@@ -46,7 +48,7 @@ public class TestPost {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		StreamUtils.copy(is, bytes);
 		System.out.println("bytes size=" + bytes.size());
-		String value = Base64.toString(bytes.toByteArray());
+		String value = Base64.encode(bytes.toByteArray());
 		System.out.println("b64 size=" + value.length());
 		postKeyValue("authenticatedCraftpic", value);
 	}
