@@ -4,6 +4,7 @@ import static moten.david.kv.Constants.AUTHENTICATED;
 import static moten.david.kv.Constants.AUTHENTICATION;
 import static moten.david.kv.Constants.SECURE;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -102,11 +103,14 @@ public class KeyValueServlet extends HttpServlet {
 				setNoCacheParameters(response);
 				if ("true".equalsIgnoreCase(request.getParameter("decodeB64"))) {
 					// decode B64 to bytes
-					Base64OutputStream os = new Base64OutputStream(response
-							.getOutputStream(), false);
-					if (result != null)
+					if (result != null) {
+						ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+						Base64OutputStream os = new Base64OutputStream(bytes,
+								false);
 						os.write(result.getBytes());
-					os.close();
+						os.close();
+						respondWith(response, bytes.toByteArray());
+					}
 				} else
 					respondWith(response, (result == null ? "" : result));
 			} else if ("put".equals(action)) {
