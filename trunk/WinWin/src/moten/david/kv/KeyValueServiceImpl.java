@@ -48,12 +48,22 @@ public class KeyValueServiceImpl implements KeyValueService {
 	}
 
 	@Override
-	public void append(String key, String value) {
-		String s = get(key);
-		if (s == null)
-			put(key, value);
+	public void append(String key, String appendThis) {
+		Entity entity;
+		try {
+			entity = datastore.get(KeyFactory.createKey(KV_ENTITY_TYPE, key));
+		} catch (EntityNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		if (entity == null)
+			put(key, appendThis);
 		else {
-			put(key, s + value);
+			Text currentValue = (Text) entity.getProperty(ENTITY_VALUE);
+			String newValue = (currentValue == null ? appendThis : currentValue
+					.getValue()
+					+ appendThis);
+			entity.setProperty(ENTITY_VALUE, new Text(newValue));
+			datastore.put(entity);
 		}
 	}
 
