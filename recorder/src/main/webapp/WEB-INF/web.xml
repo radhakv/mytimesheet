@@ -3,5 +3,17 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Tv Recorder</display-name>
+
+	<display-name>Tv Recorder</display-name>
+
+	<servlet>
+		<servlet-name>programme</servlet-name>
+		<servlet-class>moten.david.util.tv.servlet.ProgrammeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>programme</servlet-name>
+		<url-pattern>/p</url-pattern>
+	</servlet-mapping>
+
+
 </web-app>
