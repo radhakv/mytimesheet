@@ -65,6 +65,10 @@ public class ProgrammeItem {
 		return categories;
 	}
 
+	public int getDurationMinutes() {
+		return (int) ((stop.getTime() - start.getTime()) / 1000 / 60);
+	}
+
 	private Date start;
 	private Date stop;
 	private String channelId;

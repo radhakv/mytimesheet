@@ -3,7 +3,10 @@ package moten.david.util.tv.servlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -15,18 +18,69 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import moten.david.util.tv.Channel;
+import moten.david.util.tv.ChannelsProvider;
+import moten.david.util.tv.programme.Programme;
+import moten.david.util.tv.programme.ProgrammeItem;
+import moten.david.util.tv.programme.ProgrammeProvider;
+
+import com.google.inject.Inject;
 import com.jamesmurty.utils.XMLBuilder;
 
 public class ProgrammeServlet extends HttpServlet {
+
+	private static final int CHANNEL_WIDTH = 100;
+	@Inject
+	private ProgrammeProvider programmeProvider;
+	@Inject
+	private ChannelsProvider channelsProvider;
+	private final Channel[] allChannels;
+
+	public ProgrammeServlet() {
+		ApplicationInjector.getInjector().injectMembers(this);
+		allChannels = channelsProvider.getChannels();
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		List<String> channels = readChannels();
 		try {
-			XMLBuilder builder = XMLBuilder.create("html").e("table");
-			for (String channel : channels) {
-				builder = builder.e("tr").e("td").t(channel).up().up();
+
+			XMLBuilder builder = XMLBuilder.create("html").e("head").e("title")
+					.t("Programme").up().e("link").a("rel", "stylesheet").a(
+							"href", "style.css").up().up().e("body");
+
+			for (String channelName : channels) {
+				builder = builder.e("table").a(
+						"style",
+						"width:" + (CHANNEL_WIDTH + getWidth(24 * 60) * 3 / 2)
+								+ "px;table-layout:fixed");
+				Channel channel = getChannel(channelName);
+				builder = builder.e("tr").e("td").a("style",
+						"width:" + CHANNEL_WIDTH + "px").e("p").t(
+						channel.getDisplayName()).up().up();
+				Programme programme = programmeProvider.getProgramme(channel,
+						new Date());
+				if (programme.size() > 0) {
+					DateFormat df = new SimpleDateFormat("HH");
+					DateFormat df2 = new SimpleDateFormat("mm");
+					Date start = programme.get(0).getStart();
+					int minutes = Integer.parseInt(df.format(start)) * 60
+							+ Integer.parseInt(df2.format(start));
+					builder = builder.e("td").a("style",
+							"width:" + getWidth(minutes) + "px").up();
+				}
+				for (ProgrammeItem item : programme) {
+					DateFormat df = new SimpleDateFormat("HH:mm");
+					int width = getWidth(item.getDurationMinutes());
+					builder = builder.e("td").a("style",
+							"width:" + width + "px").e("p").t(
+							df.format(item.getStart()) + " " + item.getTitle()
+									+ " " + item.getDurationMinutes() + "mins")
+							.up().up();
+				}
+				builder = builder.up().up();
 			}
 
 			Properties outputProperties = new Properties();
@@ -50,6 +104,17 @@ public class ProgrammeServlet extends HttpServlet {
 		} catch (TransformerException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private int getWidth(int minutes) {
+		return 4 * minutes;
+	}
+
+	private Channel getChannel(String channelName) {
+		for (Channel channel : allChannels)
+			if (channel.getId().equals(channelName))
+				return channel;
+		throw new RuntimeException("channel not found " + channelName);
 	}
 
 	private List<String> readChannels() {

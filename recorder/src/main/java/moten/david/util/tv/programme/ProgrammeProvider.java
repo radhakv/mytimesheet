@@ -8,6 +8,6 @@ public interface ProgrammeProvider {
 
 	Channel[] getStations();
 
-	Programme getSchedule(Channel station, Date date);
+	Programme getProgramme(Channel station, Date date);
 
 }
