@@ -47,7 +47,7 @@ public class ProgrammeProviderOzList implements ProgrammeProvider {
 	}
 
 	@Override
-	public Programme getSchedule(Channel station, Date date) {
+	public Programme getProgramme(Channel station, Date date) {
 		File file = configuration.getProgrammeFile(station, date);
 		Programme schedule = getSchedule(file);
 		return schedule;
@@ -137,7 +137,7 @@ public class ProgrammeProviderOzList implements ProgrammeProvider {
 				configuration, stationsProvider);
 
 		for (Channel station : stationsProvider.getChannels()) {
-			Programme schedule = scheduleProvider.getSchedule(station,
+			Programme schedule = scheduleProvider.getProgramme(station,
 					new Date());
 			if (schedule.size() > 0)
 				System.out.println(schedule);
