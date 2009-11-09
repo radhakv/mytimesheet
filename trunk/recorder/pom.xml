@@ -68,9 +68,18 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.10</version>
 				<configuration>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopPort>9966</stopPort>
 					<stopKey>foo</stopKey>
+					<connectors>
+						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+					</connectors>
 				</configuration>
+
+
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -79,12 +88,11 @@
 				<executions>
 					<execution>
 						<goals>
-							<!-- gwt:* goals to be executed during build -->
+							<goal>compile</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 	<repositories>
