@@ -12,7 +12,17 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>programme</servlet-name>
-		<url-pattern>/p</url-pattern>
+		<url-pattern>/programme</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>service</servlet-name>
+		<servlet-class>moten.david.util.tv.ui.server.ApplicationServiceImpl</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>service</servlet-name>
+		<url-pattern>/service</url-pattern>
 	</servlet-mapping>
 
 
