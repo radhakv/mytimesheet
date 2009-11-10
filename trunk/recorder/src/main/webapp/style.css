@@ -1,2 +1,142 @@
-p {font-size:10px}
-td {overflow:hidden;}
+.day {
+	
+}
+
+.date {
+	
+}
+
+.startTime {
+	width:4em;
+}
+
+.endTime {
+	width:4em;
+}
+
+.entry{
+	border:1px solid black;
+	border-collapse:collapse;
+	margin-top:0px;
+	margin-bottom:0px;
+}
+
+.entry td{
+	border:1px solid black;
+	border-collapse:collapse;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:80%;
+}
+
+.entries{
+	border:1px solid black;
+	border-collapse:collapse;
+	margin-top:20px;
+	margin-bottom:0px;
+}
+
+.entries td{
+	border:1px solid black;
+	border-collapse:collapse;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:80%;
+}
+
+.information {
+	width:100%;
+}
+
+.delete {
+	font-size:80%;
+	color:blue; 
+	background-color:transparent; 
+	border:none;  
+}
+.add {
+	font-size:80%;
+	color:blue; 
+	background-color:transparent; 
+	border:none;  
+}
+
+
+.menuItem {
+	font-size:100%;
+	color:blue; 
+	background-color:transparent; 
+	text-decoration:none;
+	text-align:left;
+	border:none;  
+	margin-bottom:8px;
+	margin-left:50px;
+	padding:0px;
+}
+
+.contentPanel {
+	width: 100%;
+}
+
+.importPanel {
+	width:100%;
+	margin-right:50px;
+}
+
+.importText {
+	width:100%;	
+	height:300px;
+}
+
+.exportPanel {
+	width:100%;	
+	margin-right:50px;
+}
+
+.exportText {
+	width:100%;
+	height:300px;
+}
+
+.job {
+	margin-bottom:30px;
+	font-weight:bold;
+}
+
+.reportDay {
+	width:12em;
+}
+
+.reportDate {
+	width:12em;
+}
+
+.reportStartTime {
+	width:5em;
+}
+.reportEndTime {
+	width:5em;
+}
+.reportDuration {
+	width:5em;
+}
+.selectStartDate {
+	margin-right:50px;
+	margin-bottom:50px;
+}
+.selectEndDate {
+}
+.mainPanel {
+	width:100%;
+}
+.headerPanel {
+	height:20px;
+}
+
+.bodyPanel {
+	width:100%;
+	margin-left:20px;
+	margin-right:50px;
+}
+.menuPanel {
+}
