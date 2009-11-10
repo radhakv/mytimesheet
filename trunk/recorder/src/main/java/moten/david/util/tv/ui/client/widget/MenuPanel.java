@@ -1,7 +1,7 @@
 package moten.david.util.tv.ui.client.widget;
 
 import moten.david.util.tv.ui.client.Application;
-import moten.david.util.tv.ui.client.event.Refresh;
+import moten.david.util.tv.ui.client.event.ShowProgramme;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,7 +18,7 @@ public class MenuPanel extends VerticalPanel {
 		showProgramme.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				Application.getInstance().getController().event(new Refresh());
+				Application.getInstance().getController().event(new ShowProgramme());
 			}
 		});
 	}
