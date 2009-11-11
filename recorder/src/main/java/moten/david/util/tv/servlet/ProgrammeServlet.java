@@ -20,6 +20,7 @@ import javax.xml.transform.TransformerException;
 
 import moten.david.util.tv.Channel;
 import moten.david.util.tv.ChannelsProvider;
+import moten.david.util.tv.Util;
 import moten.david.util.tv.programme.Programme;
 import moten.david.util.tv.programme.ProgrammeItem;
 import moten.david.util.tv.programme.ProgrammeProvider;
@@ -60,7 +61,7 @@ public class ProgrammeServlet extends HttpServlet {
 						"style",
 						"width:" + (CHANNEL_WIDTH + getWidth(24 * 60) * 3 / 2)
 								+ "px;table-layout:fixed");
-				Channel channel = getChannel(channelName);
+				Channel channel = Util.getChannel(channelName, allChannels);
 				builder = builder.e("tr").e("td").a("style",
 						"width:" + CHANNEL_WIDTH + "px").e("p").t(
 						channel.getDisplayName()).up().up();
@@ -112,13 +113,6 @@ public class ProgrammeServlet extends HttpServlet {
 
 	private int getWidth(int minutes) {
 		return 4 * minutes;
-	}
-
-	private Channel getChannel(String channelName) {
-		for (Channel channel : allChannels)
-			if (channel.getId().equals(channelName))
-				return channel;
-		throw new RuntimeException("channel not found " + channelName);
 	}
 
 	private List<String> readChannels() {

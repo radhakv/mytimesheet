@@ -1,5 +1,7 @@
 package moten.david.util.tv.ui.client;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -8,4 +10,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("service")
 public interface ApplicationService extends RemoteService {
+
+	MyProgrammeItem[] getProgramme(String channel, Date date);
 }
