@@ -1,8 +1,10 @@
 package moten.david.util.tv.ui.client;
 
+import java.util.Date;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ApplicationServiceAsync {
-	// public void getWords(String gameId, AsyncCallback<MyWord[]> callback);
-
-	// public void newGame(AsyncCallback<String> callback);
+	void getProgramme(String channel, Date date,
+			AsyncCallback<MyProgrammeItem[]> callback);
 }

@@ -44,6 +44,21 @@
 	font-size:80%;
 }
 
+.noBorder{
+	border:none;
+	border-collapse:collapse;
+	margin-top:20px;
+	margin-bottom:0px;
+}
+
+.noBorder td{
+	border:none;
+	border-collapse:collapse;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:80%;
+}
+
 .information {
 	width:100%;
 }
@@ -59,6 +74,10 @@
 	color:blue; 
 	background-color:transparent; 
 	border:none;  
+}
+
+.current {
+	font-weight:bold;
 }
 
 
