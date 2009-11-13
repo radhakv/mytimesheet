@@ -12,6 +12,8 @@ import moten.david.util.tv.ui.client.controller.ControllerListener;
 import moten.david.util.tv.ui.client.event.ShowProgramme;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -60,7 +62,7 @@ public class ProgrammePanel extends VerticalPanel {
 				try {
 					Date now = new Date();
 					int totalExtraSpan = 0;
-					for (MyProgrammeItem item : items) {
+					for (final MyProgrammeItem item : items) {
 						int row = channels.indexOf(item.getChannelId());
 						table.setText(row, 0, item.getChannelId());
 						int col = item.getStartTimeInMinutes() / 5 + 1;
@@ -81,22 +83,49 @@ public class ProgrammePanel extends VerticalPanel {
 						startTime += minutes;
 						VerticalPanel vp = new VerticalPanel();
 						vp.setStyleName("noBorder");
-						Label label1 = new Label(startTime);
+						Label labelTime = new Label(startTime);
 						if (item.getStart().before(now)
 								&& item.getStop().after(now))
-							label1.setStyleName("current");
-						vp.add(label1);
-						vp.add(new Label(item.getTitle()));
+							labelTime.setStyleName("current");
+						vp.add(labelTime);
+						ClickHandler clickHandler = createClickHandler(item
+								.getChannelId());
+						labelTime.addClickHandler(clickHandler);
+						Label labelTitle = new Label(item.getTitle());
+						labelTitle.addClickHandler(clickHandler);
+						vp.add(labelTitle);
 						table.setWidget(row, col, vp);
 						// table.getFlexCellFormatter().setStyleName(row, col,
 						// "entry");
 						table.getFlexCellFormatter().setColSpan(row, col, span);
+
 					}
 				} catch (RuntimeException e) {
 					add(new Label(e.toString()));
 				}
 			}
 
+		};
+	}
+
+	private ClickHandler createClickHandler(final String channelId) {
+		return new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent arg0) {
+				applicationService.play(channelId, new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable arg0) {
+						add(new Label(arg0.getMessage()));
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						// do nothing
+					}
+				});
+			}
 		};
 	}
 

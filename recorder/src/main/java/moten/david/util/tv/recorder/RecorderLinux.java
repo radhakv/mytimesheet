@@ -70,14 +70,17 @@ public class RecorderLinux implements Recorder {
 
 	@Override
 	public void play(String channelId) {
-		final String alias = aliasProvider.getAlias(channelId);
-		List<String> command = new ArrayList<String>() {
-			{
-				add("/usr/bin/mplayer");
-				add("dvb://" + alias);
-			}
-		};
-		;
+		String alias = aliasProvider.getAlias(channelId);
+		File file = new File("src/main/resources/stop-dvb-player.sh");
+		startProcess(file.getAbsolutePath());
+		startProcess("/usr/bin/mplayer", "-quiet", "dvb://" + alias);
+	}
+
+	public void startProcess(String... commandParts) {
+
+		List<String> command = new ArrayList<String>();
+		for (String commandPart : commandParts)
+			command.add(commandPart);
 		ProcessBuilder builder = new ProcessBuilder(command);
 		builder.redirectErrorStream(true);
 		try {
@@ -90,6 +93,7 @@ public class RecorderLinux implements Recorder {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+
 	}
 
 	private static class ConsoleWriter {
