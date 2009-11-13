@@ -11,5 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("service")
 public interface ApplicationService extends RemoteService {
 
-	MyProgrammeItem[] getProgramme(String channel, Date date);
+	MyProgrammeItem[] getProgramme(String channelId, Date date);
+
+	void play(String channelId);
 }

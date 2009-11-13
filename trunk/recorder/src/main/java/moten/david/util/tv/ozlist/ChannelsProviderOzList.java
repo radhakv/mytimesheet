@@ -66,6 +66,7 @@ public class ChannelsProviderOzList implements ChannelsProvider {
 					getBaseUrls(xpath, doc, station);
 					getDataFor(xpath, doc, station);
 				}
+				station.setAlias(getAlias(station.getId()));
 				stations.add(station);
 			}
 
@@ -83,6 +84,11 @@ public class ChannelsProviderOzList implements ChannelsProvider {
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private String getAlias(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void getDisplayName(XPath xpath, Document doc, Channel station)

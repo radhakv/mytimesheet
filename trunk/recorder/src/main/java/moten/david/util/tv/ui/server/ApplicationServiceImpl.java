@@ -3,6 +3,7 @@ package moten.david.util.tv.ui.server;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import moten.david.util.tv.Channel;
 import moten.david.util.tv.ChannelsProvider;
@@ -10,6 +11,7 @@ import moten.david.util.tv.Util;
 import moten.david.util.tv.programme.Programme;
 import moten.david.util.tv.programme.ProgrammeItem;
 import moten.david.util.tv.programme.ProgrammeProvider;
+import moten.david.util.tv.recorder.Recorder;
 import moten.david.util.tv.servlet.ApplicationInjector;
 import moten.david.util.tv.ui.client.ApplicationService;
 import moten.david.util.tv.ui.client.MyProgrammeItem;
@@ -20,19 +22,29 @@ import com.google.inject.Inject;
 public class ApplicationServiceImpl extends RemoteServiceServlet implements
 		ApplicationService {
 
+	private static Logger log = Logger.getLogger(ApplicationServiceImpl.class
+			.getName());
+
 	@Inject
 	private ProgrammeProvider programmeProvider;
 	@Inject
 	private ChannelsProvider channelsProvider;
+	@Inject
+	private Recorder recorder;
+
 	private final Channel[] allChannels;
 
 	public ApplicationServiceImpl() {
+		log.info("injecting members");
 		ApplicationInjector.getInjector().injectMembers(this);
+		log.info("getting channels");
 		allChannels = channelsProvider.getChannels();
+		log.info("constructed");
 	}
 
 	@Override
 	public MyProgrammeItem[] getProgramme(String channelName, Date date) {
+		log.info("getting programme for channel " + channelName);
 		Channel channel = Util.getChannel(channelName, allChannels);
 		Programme items = programmeProvider.getProgramme(channel, date);
 		ArrayList<MyProgrammeItem> list = new ArrayList<MyProgrammeItem>();
@@ -49,6 +61,7 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 			list.add(p);
 
 		}
+		log.info("obtained programme");
 		return list.toArray(new MyProgrammeItem[] {});
 	}
 
@@ -58,5 +71,10 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 		int hours = cal.get(Calendar.HOUR_OF_DAY);
 		int minutes = cal.get(Calendar.MINUTE);
 		return hours * 60 + minutes;
+	}
+
+	@Override
+	public void play(String channelId) {
+		recorder.play(channelId);
 	}
 }

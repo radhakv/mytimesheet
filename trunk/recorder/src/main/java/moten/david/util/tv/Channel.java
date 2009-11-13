@@ -15,6 +15,15 @@ public class Channel {
 	private String displayName;
 	private final List<String> baseUrls = new ArrayList<String>();
 	private final List<DataFor> dataFor = new ArrayList<DataFor>();
+	private String alias;
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
 	public String getId() {
 		return id;

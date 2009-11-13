@@ -10,4 +10,6 @@ public interface Recorder {
 
 	void stopRecording(ScheduleItem item);
 
+	void play(String channelId);
+
 }
