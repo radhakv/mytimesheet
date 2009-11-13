@@ -85,7 +85,7 @@ public class ProgrammePanel extends VerticalPanel {
 						if (item.getStart().before(now)
 								&& item.getStop().after(now))
 							label1.setStyleName("current");
-						// vp.add(label1);
+						vp.add(label1);
 						vp.add(new Label(item.getTitle()));
 						table.setWidget(row, col, vp);
 						// table.getFlexCellFormatter().setStyleName(row, col,

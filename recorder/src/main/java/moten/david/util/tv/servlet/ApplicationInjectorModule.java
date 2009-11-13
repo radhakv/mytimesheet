@@ -5,6 +5,8 @@ import moten.david.util.tv.Configuration;
 import moten.david.util.tv.ozlist.ChannelsProviderOzList;
 import moten.david.util.tv.ozlist.ProgrammeProviderOzList;
 import moten.david.util.tv.programme.ProgrammeProvider;
+import moten.david.util.tv.recorder.AliasProvider;
+import moten.david.util.tv.recorder.AliasProviderImpl;
 import moten.david.util.tv.recorder.Recorder;
 import moten.david.util.tv.recorder.RecorderLinux;
 
@@ -21,6 +23,8 @@ public class ApplicationInjectorModule extends AbstractModule {
 		bind(ProgrammeProvider.class).to(ProgrammeProviderOzList.class).in(
 				Scopes.SINGLETON);
 		bind(Recorder.class).to(RecorderLinux.class).in(Scopes.SINGLETON);
+		bind(AliasProvider.class).to(AliasProviderImpl.class).in(
+				Scopes.SINGLETON);
 
 	}
 

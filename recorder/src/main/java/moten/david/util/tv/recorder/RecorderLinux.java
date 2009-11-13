@@ -3,13 +3,14 @@ package moten.david.util.tv.recorder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import moten.david.util.tv.Configuration;
 import moten.david.util.tv.schedule.ScheduleItem;
@@ -18,28 +19,15 @@ import moten.david.util.tv.servlet.ApplicationInjector;
 import com.google.inject.Inject;
 
 public class RecorderLinux implements Recorder {
-
+	private static Logger log = Logger.getLogger(RecorderLinux.class.getName());
 	private final File recordings;
-	private final HashMap<String, String> mplayerChannels;
+	private final AliasProvider aliasProvider;
 
 	@Inject
-	public RecorderLinux(Configuration configuration) {
+	public RecorderLinux(Configuration configuration,
+			AliasProvider aliasProvider) {
+		this.aliasProvider = aliasProvider;
 		recordings = configuration.getRecordingsFolder();
-		mplayerChannels = new HashMap<String, String>();
-		BufferedReader br = new BufferedReader(new InputStreamReader(getClass()
-				.getResourceAsStream("/channels.txt")));
-		String line;
-		try {
-			while ((line = br.readLine()) != null) {
-				if (line.trim().length() > 0) {
-					String[] items = line.split("\t");
-					mplayerChannels.put(items[0], items[1]);
-				}
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
 	}
 
 	@Override
@@ -57,7 +45,7 @@ public class RecorderLinux implements Recorder {
 		String filename = df.format(item.getStartDate()) + "_"
 				+ item.getChannel() + "_" + item.getName() + ".avi";
 		command.add(new File(recordings, filename).getAbsolutePath());
-		command.add("dvb://" + mplayerChannels.get(item.getChannel()));
+		command.add("dvb://" + aliasProvider.getAlias(item.getChannel()));
 		ProcessBuilder builder = new ProcessBuilder(command);
 		try {
 			builder.start();
@@ -78,5 +66,51 @@ public class RecorderLinux implements Recorder {
 		Recorder recorder = ApplicationInjector.getInjector().getInstance(
 				Recorder.class);
 		recorder.startRecording(item);
+	}
+
+	@Override
+	public void play(String channelId) {
+		final String alias = aliasProvider.getAlias(channelId);
+		List<String> command = new ArrayList<String>() {
+			{
+				add("/usr/bin/mplayer");
+				add("dvb://" + alias);
+			}
+		};
+		;
+		ProcessBuilder builder = new ProcessBuilder(command);
+		builder.redirectErrorStream(true);
+		try {
+			Process process = builder.start();
+			new ConsoleWriter(process.getInputStream());
+			int resultCode = process.waitFor();
+			log.info("result code = " + resultCode);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static class ConsoleWriter {
+
+		public ConsoleWriter(final InputStream is) {
+			Thread t = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					BufferedReader br = new BufferedReader(
+							new InputStreamReader(is));
+					String line;
+					try {
+						while ((line = br.readLine()) != null)
+							log.info(line);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();
+		}
 	}
 }
