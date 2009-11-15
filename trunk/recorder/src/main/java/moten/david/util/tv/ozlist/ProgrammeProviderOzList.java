@@ -58,6 +58,9 @@ public class ProgrammeProviderOzList implements ProgrammeProvider {
 		Programme programme = getProgramme(file1);
 		File file2 = configuration.getProgrammeFile(station, date);
 		programme.addAll(getProgramme(file2));
+		File file3 = configuration.getProgrammeFile(station, new Date(date
+				.getTime() + 24 * 3600 * 1000));
+		programme.addAll(getProgramme(file3));
 		HashSet<ProgrammeItem> remove = new HashSet<ProgrammeItem>();
 		for (ProgrammeItem item : programme) {
 			if (item.getStop().before(date))

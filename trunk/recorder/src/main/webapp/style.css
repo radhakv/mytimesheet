@@ -31,6 +31,10 @@
 	font-size:80%;
 }
 
+.itemDescription {
+	min-width: 200px;
+}
+
 .programmeItemEmpty  {
 	border:none;
 	border-collapse:collapse;
@@ -40,6 +44,25 @@
 
 .programmeRow {
 	max-height:100px;
+}
+
+.play {
+	font-size:80%;
+	color:blue; 
+	background-color:transparent; 
+	border:none;  
+}
+
+.channel {
+	font-size:100%;
+	font-weight:bold;
+	color:white;
+	padding-left:10px;
+	padding-right:-10px;
+}
+
+.channelCell {
+	background-color:red;
 }
 
 .noBorder{
