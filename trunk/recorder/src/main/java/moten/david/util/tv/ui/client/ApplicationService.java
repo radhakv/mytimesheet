@@ -14,4 +14,6 @@ public interface ApplicationService extends RemoteService {
 	MyProgrammeItem[] getProgramme(String[] channelId, Date start, Date stop);
 
 	void play(String channelId);
+
+	void record(String name, String channelId, Date start, Date stop);
 }

@@ -53,6 +53,13 @@
 	border:none;  
 }
 
+.record {
+	font-size:80%;
+	color:blue; 
+	background-color:transparent; 
+	border:none;  
+}
+
 .channel {
 	font-size:100%;
 	font-weight:bold;

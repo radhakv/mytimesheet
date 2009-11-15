@@ -12,6 +12,7 @@ import moten.david.util.tv.programme.Programme;
 import moten.david.util.tv.programme.ProgrammeItem;
 import moten.david.util.tv.programme.ProgrammeProvider;
 import moten.david.util.tv.recorder.Recorder;
+import moten.david.util.tv.schedule.ScheduleItem;
 import moten.david.util.tv.servlet.ApplicationInjector;
 import moten.david.util.tv.ui.client.ApplicationService;
 import moten.david.util.tv.ui.client.MyProgrammeItem;
@@ -78,5 +79,12 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void play(String channelId) {
 		recorder.play(channelId);
+	}
+
+	@Override
+	public void record(String name, String channelId, Date start, Date stop) {
+		ScheduleItem item = new ScheduleItem(name, channelId, start, stop);
+		recorder.startRecording(item);
+
 	}
 }
