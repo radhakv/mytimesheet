@@ -15,6 +15,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
@@ -67,25 +68,31 @@ public class ProgrammePanel extends VerticalPanel {
 					// int nowMinutes = now.getHours() * 60 + now.getMinutes();
 					int totalExtraSpan = 0;
 					String lastChannelId = null;
-					Integer bestStartTimeMinutes = null;
+					Date bestStartTime = null;
 					for (final MyProgrammeItem item : items) {
-						if (bestStartTimeMinutes == null
-								|| item.getStartTimeInMinutes() < bestStartTimeMinutes)
-							bestStartTimeMinutes = item.getStartTimeInMinutes();
+						if (bestStartTime == null
+								|| item.getStart().before(bestStartTime))
+							bestStartTime = item.getStart();
 					}
-					if (bestStartTimeMinutes == null)
-						bestStartTimeMinutes = 0;
+					if (bestStartTime == null)
+						bestStartTime = new Date();
 
 					for (final MyProgrammeItem item : items) {
-						if (item.getStartTimeInMinutes() >= bestStartTimeMinutes) {
+						if (item.getStart().after(bestStartTime)) {
 							if (!item.getChannelId().equals(lastChannelId))
 								totalExtraSpan = 0;
 							int row = channels.indexOf(item.getChannelId());
-							table.setText(row, 0, item.getChannelId());
-							int col = (item.getStartTimeInMinutes() - bestStartTimeMinutes) / 5 + 1;
+							{
+								Label label = new Label(item.getChannelId());
+								table.setWidget(row, 0, label);
+								label.setStyleName("channel");
+							}
+							int col = (int) ((item.getStart().getTime() - bestStartTime
+									.getTime())
+									/ (5 * 60000l) + 1);
 							col -= totalExtraSpan;
-							int span = (item.getStopTimeInMinutes() - item
-									.getStartTimeInMinutes()) / 5;
+							int span = (int) ((item.getStop().getTime() - item
+									.getStart().getTime()) / (60000l * 5));
 							totalExtraSpan += span - 1;
 
 							String startTime = (item.getStartTimeInMinutes() / 60)
@@ -110,24 +117,25 @@ public class ProgrammePanel extends VerticalPanel {
 								vp.add(labelTime);
 								ClickHandler clickHandler = createClickHandler(item
 										.getChannelId());
-								labelTime.addClickHandler(clickHandler);
+								DisclosurePanel disclosureTitle = new DisclosurePanel();
 								Label labelTitle = new Label(item.getTitle());
 								labelTitle.setStyleName("itemTitle");
-								labelTitle.addClickHandler(clickHandler);
-
-								vp.add(labelTitle);
-								if (true || item.getStopTimeInMinutes()
-										- item.getStartTimeInMinutes() > 60) {
+								disclosureTitle.setHeader(labelTitle);
+								vp.add(disclosureTitle);
+								{
+									VerticalPanel content = new VerticalPanel();
 									Label text = new Label();
 									String desc = item.getDescription();
 									// if (desc != null && desc.length() > 250)
 									// desc = desc.substring(0, 250);
 									text.setText(desc);
 									text.setStyleName("itemDescription");
-									DisclosurePanel d = new DisclosurePanel();
-									d.setContent(text);
-									d.setHeader(new Label("..."));
-									vp.add(d);
+									content.add(text);
+									Button play = new Button("Play");
+									play.setStyleName("play");
+									content.add(play);
+									play.addClickHandler(clickHandler);
+									disclosureTitle.setContent(content);
 									text.addClickHandler(clickHandler);
 								}
 
@@ -145,6 +153,8 @@ public class ProgrammePanel extends VerticalPanel {
 					}
 
 					for (int row = 0; row < table.getRowCount(); row++) {
+						table.getCellFormatter().setStyleName(row, 0,
+								"channelCell");
 						int span = 1;
 						int col = 1;
 						while (table.getWidget(row, col) == null
