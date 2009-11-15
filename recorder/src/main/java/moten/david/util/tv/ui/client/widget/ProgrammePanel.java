@@ -16,10 +16,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ProgrammePanel extends VerticalPanel {
@@ -109,13 +112,14 @@ public class ProgrammePanel extends VerticalPanel {
 								VerticalPanel vp = new VerticalPanel();
 								vp.setStyleName("noBorder");
 								Label labelTime = new Label(startTime);
-								if (item.getStart().before(now)
-										&& item.getStop().after(now))
+								boolean isOnNow = item.getStart().before(now)
+										&& item.getStop().after(now);
+								if (isOnNow)
 									labelTime.setStyleName("currentTime");
 								else
 									labelTime.setStyleName("time");
 								vp.add(labelTime);
-								ClickHandler clickHandler = createClickHandler(item
+								ClickHandler clickHandler = createPlayClickHandler(item
 										.getChannelId());
 								DisclosurePanel disclosureTitle = new DisclosurePanel();
 								Label labelTitle = new Label(item.getTitle());
@@ -131,9 +135,29 @@ public class ProgrammePanel extends VerticalPanel {
 									text.setText(desc);
 									text.setStyleName("itemDescription");
 									content.add(text);
+									HorizontalPanel p = new HorizontalPanel();
 									Button play = new Button("Play");
 									play.setStyleName("play");
-									content.add(play);
+									if (isOnNow)
+										p.add(play);
+									DisclosurePanel record = new DisclosurePanel();
+									p.add(record);
+									{
+										Label recordLabel = new Label("Record");
+										recordLabel.setStyleName("record");
+										record.setHeader(recordLabel);
+										Panel p2 = new HorizontalPanel();
+										final CheckBox highQuality = new CheckBox(
+												"High Quality");
+										p2.add(highQuality);
+										Button recordButton = new Button(
+												"Record");
+										p2.add(recordButton);
+										record.setContent(p2);
+										recordButton
+												.addClickHandler(createRecordClickHandler(item));
+									}
+									content.add(p);
 									play.addClickHandler(clickHandler);
 									disclosureTitle.setContent(content);
 									text.addClickHandler(clickHandler);
@@ -174,7 +198,7 @@ public class ProgrammePanel extends VerticalPanel {
 		};
 	}
 
-	private ClickHandler createClickHandler(final String channelId) {
+	private ClickHandler createPlayClickHandler(final String channelId) {
 		return new ClickHandler() {
 
 			@Override
@@ -191,6 +215,29 @@ public class ProgrammePanel extends VerticalPanel {
 						// do nothing
 					}
 				});
+			}
+		};
+	}
+
+	private ClickHandler createRecordClickHandler(final MyProgrammeItem item) {
+		return new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent arg0) {
+				applicationService.record(item.getTitle(), item.getChannelId(),
+						item.getStart(), item.getStop(),
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onFailure(Throwable arg0) {
+								add(new Label(arg0.getMessage()));
+							}
+
+							@Override
+							public void onSuccess(Void arg0) {
+								// do nothing
+							}
+						});
 			}
 		};
 	}

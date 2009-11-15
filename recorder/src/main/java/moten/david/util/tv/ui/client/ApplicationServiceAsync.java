@@ -9,4 +9,7 @@ public interface ApplicationServiceAsync {
 			AsyncCallback<MyProgrammeItem[]> callback);
 
 	void play(String channelId, AsyncCallback<Void> callback);
+
+	void record(String name, String channelId, Date start, Date stop,
+			AsyncCallback<Void> callback);
 }

@@ -13,6 +13,24 @@ public class MyProgrammeItem implements Serializable {
 	private String[] categories;
 	private int startTimeInMinutes;
 	private int stopTimeInMinutes;
+	private boolean scheduledForRecording;
+	private Quality quality;
+
+	public boolean isScheduledForRecording() {
+		return scheduledForRecording;
+	}
+
+	public void setScheduledForRecording(boolean scheduledForRecording) {
+		this.scheduledForRecording = scheduledForRecording;
+	}
+
+	public Quality getQuality() {
+		return quality;
+	}
+
+	public void setQuality(Quality quality) {
+		this.quality = quality;
+	}
 
 	public int getStartTimeInMinutes() {
 		return startTimeInMinutes;
