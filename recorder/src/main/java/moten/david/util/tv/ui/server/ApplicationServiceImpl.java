@@ -43,23 +43,25 @@ public class ApplicationServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public MyProgrammeItem[] getProgramme(String channelName, Date date) {
-		log.info("getting programme for channel " + channelName);
-		Channel channel = Util.getChannel(channelName, allChannels);
-		Programme items = programmeProvider.getProgramme(channel, date);
+	public MyProgrammeItem[] getProgramme(String[] channelIds, Date start,
+			Date finish) {
 		ArrayList<MyProgrammeItem> list = new ArrayList<MyProgrammeItem>();
-		for (ProgrammeItem item : items) {
-			MyProgrammeItem p = new MyProgrammeItem();
-			p.setChannelId(item.getChannelId());
-			p.setDescription(item.getDescription());
-			p.setStart(item.getStart());
-			p.setStop(item.getStop());
-			p.setSubTitle(item.getSubTitle());
-			p.setTitle(item.getTitle());
-			p.setStartTimeInMinutes(getTimeInMinutes(item.getStart()));
-			p.setStopTimeInMinutes(getTimeInMinutes(item.getStop()));
-			list.add(p);
-
+		for (String channelId : channelIds) {
+			log.info("getting programme for channel " + channelId);
+			Channel channel = Util.getChannel(channelId, allChannels);
+			Programme items = programmeProvider.getProgramme(channel, start);
+			for (ProgrammeItem item : items) {
+				MyProgrammeItem p = new MyProgrammeItem();
+				p.setChannelId(item.getChannelId());
+				p.setDescription(item.getDescription());
+				p.setStart(item.getStart());
+				p.setStop(item.getStop());
+				p.setSubTitle(item.getSubTitle());
+				p.setTitle(item.getTitle());
+				p.setStartTimeInMinutes(getTimeInMinutes(item.getStart()));
+				p.setStopTimeInMinutes(getTimeInMinutes(item.getStop()));
+				list.add(p);
+			}
 		}
 		log.info("obtained programme");
 		return list.toArray(new MyProgrammeItem[] {});

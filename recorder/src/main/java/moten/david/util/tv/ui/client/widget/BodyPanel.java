@@ -17,6 +17,7 @@ public class BodyPanel extends VerticalPanel {
 				ShowProgramme.class, createShowProgrammeListener());
 		programmePanel = new ProgrammePanel();
 		setContent(programmePanel);
+		Application.getInstance().getController().event(new ShowProgramme());
 	}
 
 	private ControllerListener<ShowProgramme> createShowProgrammeListener() {

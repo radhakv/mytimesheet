@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,6 +41,9 @@ public class ProgrammeProviderOzList implements ProgrammeProvider {
 	private final ChannelsProvider stationsProvider;
 	private final Configuration configuration;
 
+	private static final Logger log = Logger
+			.getLogger(ProgrammeProviderOzList.class.getName());
+
 	@Inject
 	public ProgrammeProviderOzList(Configuration configuration,
 			ChannelsProvider stationsProvider) {
@@ -48,12 +53,23 @@ public class ProgrammeProviderOzList implements ProgrammeProvider {
 
 	@Override
 	public Programme getProgramme(Channel station, Date date) {
-		File file = configuration.getProgrammeFile(station, date);
-		Programme schedule = getSchedule(file);
-		return schedule;
+		File file1 = configuration.getProgrammeFile(station, new Date(date
+				.getTime() - 24 * 3600 * 1000));
+		Programme programme = getProgramme(file1);
+		File file2 = configuration.getProgrammeFile(station, date);
+		programme.addAll(getProgramme(file2));
+		HashSet<ProgrammeItem> remove = new HashSet<ProgrammeItem>();
+		for (ProgrammeItem item : programme) {
+			if (item.getStop().before(date))
+				remove.add(item);
+		}
+		programme.removeAll(remove);
+		log.info("returning " + programme.size() + " items for " + station
+				+ " " + date);
+		return programme;
 	}
 
-	private Programme getSchedule(File file) {
+	private Programme getProgramme(File file) {
 		try {
 			Programme schedule = new Programme();
 			if (!file.exists())

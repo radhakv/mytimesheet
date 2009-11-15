@@ -5,7 +5,7 @@ import java.util.Date;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface ApplicationServiceAsync {
-	void getProgramme(String channelId, Date date,
+	void getProgramme(String[] channelIds, Date start, Date finish,
 			AsyncCallback<MyProgrammeItem[]> callback);
 
 	void play(String channelId, AsyncCallback<Void> callback);

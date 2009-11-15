@@ -1,9 +1,9 @@
+SBS-Can	sbs
+SBSTWO-NSW	sbs2
+One-NSW	one
 ABC2	abc2
 ABC-Can	abc
 Prime-Can	prime
-SBS-Can	sbs
 Ten-Can	ten
 WIN-Can	win
-SBSTWO-NSW	sbs2
-One-NSW	one
 GO	go
