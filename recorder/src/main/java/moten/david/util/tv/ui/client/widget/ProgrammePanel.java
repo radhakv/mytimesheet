@@ -78,7 +78,7 @@ public class ProgrammePanel extends VerticalPanel {
 						bestStartTime = new Date();
 
 					for (final MyProgrammeItem item : items) {
-						if (item.getStart().after(bestStartTime)) {
+						if (item.getStop().after(bestStartTime)) {
 							if (!item.getChannelId().equals(lastChannelId))
 								totalExtraSpan = 0;
 							int row = channels.indexOf(item.getChannelId());
