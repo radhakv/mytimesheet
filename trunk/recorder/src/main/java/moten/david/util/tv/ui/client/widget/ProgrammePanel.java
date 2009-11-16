@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ProgrammePanel extends VerticalPanel {
 
@@ -66,105 +67,45 @@ public class ProgrammePanel extends VerticalPanel {
 			@Override
 			public void onSuccess(MyProgrammeItem[] items) {
 				try {
-					Date now = new Date();
+					// each cell is 5 mins wide
+					final int cellWidthMinutes = 5;
+					final long minuteMs = 60000;
 
-					// int nowMinutes = now.getHours() * 60 + now.getMinutes();
 					int totalExtraSpan = 0;
 					String lastChannelId = null;
-					Date bestStartTime = null;
-					for (final MyProgrammeItem item : items) {
-						if (bestStartTime == null
-								|| item.getStart().before(bestStartTime))
-							bestStartTime = item.getStart();
-					}
-					if (bestStartTime == null)
-						bestStartTime = new Date();
+					Date bestStartTime = getBestStartTime(items);
 
+					int index = 0;
+					// insert the items into the table
 					for (final MyProgrammeItem item : items) {
 						if (item.getStop().after(bestStartTime)) {
+							// reset span count if channel has changed because
+							// that means we have moved to the another row
 							if (!item.getChannelId().equals(lastChannelId))
 								totalExtraSpan = 0;
+
+							// get the row corresponding to the channel
 							int row = channels.indexOf(item.getChannelId());
-							{
-								Label label = new Label(item.getChannelId());
-								table.setWidget(row, 0, label);
-								label.setStyleName("channel");
-							}
+
+							// set the row channel label
+							table.setWidget(row, 0, getChannelLabel(item));
+
 							int col = (int) ((item.getStart().getTime() - bestStartTime
 									.getTime())
-									/ (5 * 60000l) + 1);
+									/ (cellWidthMinutes * minuteMs) + 1);
 							col -= totalExtraSpan;
-							int span = (int) ((item.getStop().getTime() - item
-									.getStart().getTime()) / (60000l * 5));
+							// calculate stop time based on next programme item
+							// start time
+							Date stopTime = item.getStop();
+							if (index < items.length - 1
+									&& items[index + 1].getChannelId().equals(
+											item.getChannelId()))
+								stopTime = items[index + 1].getStart();
+							int span = (int) ((stopTime.getTime() - item
+									.getStart().getTime()) / (minuteMs * cellWidthMinutes));
 							totalExtraSpan += span - 1;
 
-							String startTime = (item.getStartTimeInMinutes() / 60)
-									+ "";
-							if (startTime.length() == 1)
-								startTime = "0" + startTime;
-							startTime += ":";
-							String minutes = (item.getStartTimeInMinutes() % 60)
-									+ "";
-							if (minutes.length() == 1)
-								minutes = "0" + minutes;
-							startTime += minutes;
-							{
-								VerticalPanel vp = new VerticalPanel();
-								vp.setStyleName("noBorder");
-								Label labelTime = new Label(startTime);
-								boolean isOnNow = item.getStart().before(now)
-										&& item.getStop().after(now);
-								if (isOnNow)
-									labelTime.setStyleName("currentTime");
-								else
-									labelTime.setStyleName("time");
-								vp.add(labelTime);
-								ClickHandler clickHandler = createPlayClickHandler(item
-										.getChannelId());
-								DisclosurePanel disclosureTitle = new DisclosurePanel();
-								Label labelTitle = new Label(item.getTitle());
-								labelTitle.setStyleName("itemTitle");
-								disclosureTitle.setHeader(labelTitle);
-								vp.add(disclosureTitle);
-								{
-									VerticalPanel content = new VerticalPanel();
-									Label text = new Label();
-									String desc = item.getDescription();
-									// if (desc != null && desc.length() > 250)
-									// desc = desc.substring(0, 250);
-									text.setText(desc);
-									text.setStyleName("itemDescription");
-									content.add(text);
-									HorizontalPanel p = new HorizontalPanel();
-									Button play = new Button("Play");
-									play.setStyleName("play");
-									if (isOnNow)
-										p.add(play);
-									DisclosurePanel record = new DisclosurePanel();
-									p.add(record);
-									{
-										Label recordLabel = new Label("Record");
-										recordLabel.setStyleName("record");
-										record.setHeader(recordLabel);
-										Panel p2 = new HorizontalPanel();
-										final CheckBox highQuality = new CheckBox(
-												"High Quality");
-										p2.add(highQuality);
-										Button recordButton = new Button(
-												"Record");
-										p2.add(recordButton);
-										record.setContent(p2);
-										recordButton
-												.addClickHandler(createRecordClickHandler(item));
-									}
-									content.add(p);
-									play.addClickHandler(clickHandler);
-									disclosureTitle.setContent(content);
-									text.addClickHandler(clickHandler);
-								}
-
-								table.setWidget(row, col, vp);
-							}
+							table.setWidget(row, col, createItemWidget(item));
 							table.getFlexCellFormatter().setColSpan(row, col,
 									span);
 							table.getRowFormatter().setStyleName(row,
@@ -189,10 +130,101 @@ public class ProgrammePanel extends VerticalPanel {
 							col++;
 						}
 					}
+					index++;
 
 				} catch (RuntimeException e) {
 					add(new Label(e.toString()));
 				}
+			}
+
+			private Widget getChannelLabel(MyProgrammeItem item) {
+				Label label = new Label(item.getChannelId());
+				label.setStyleName("channel");
+				return label;
+			}
+
+			private Widget createItemWidget(MyProgrammeItem item) {
+				VerticalPanel vp = new VerticalPanel();
+				vp.setStyleName("noBorder");
+				Label labelTime = new Label(getStartTimeString(item));
+
+				if (isOnNow(item))
+					labelTime.setStyleName("currentTime");
+				else
+					labelTime.setStyleName("time");
+				vp.add(labelTime);
+
+				DisclosurePanel disclosureTitle = new DisclosurePanel();
+				Label labelTitle = new Label(item.getTitle());
+				labelTitle.setStyleName("itemTitle");
+				disclosureTitle.setHeader(labelTitle);
+				disclosureTitle.setContent(getContent(item));
+				vp.add(disclosureTitle);
+				return vp;
+			}
+
+			private boolean isOnNow(MyProgrammeItem item) {
+				Date now = new Date();
+				boolean isOnNow = item.getStart().before(now)
+						&& item.getStop().after(now);
+				return isOnNow;
+			}
+
+			private Widget getContent(MyProgrammeItem item) {
+				VerticalPanel content = new VerticalPanel();
+				Label text = new Label();
+				text.setText(item.getDescription());
+				text.setStyleName("itemDescription");
+				content.add(text);
+				HorizontalPanel p = new HorizontalPanel();
+				Button play = new Button("Play");
+				play.setStyleName("play");
+				if (isOnNow(item))
+					p.add(play);
+				DisclosurePanel record = new DisclosurePanel();
+				p.add(record);
+				{
+					Label recordLabel = new Label("Record");
+					recordLabel.setStyleName("record");
+					record.setHeader(recordLabel);
+					Panel p2 = new HorizontalPanel();
+					final CheckBox highQuality = new CheckBox("High Quality");
+					p2.add(highQuality);
+					Button recordButton = new Button("Record");
+					p2.add(recordButton);
+					record.setContent(p2);
+					recordButton
+							.addClickHandler(createRecordClickHandler(item));
+				}
+				content.add(p);
+				play
+						.addClickHandler(createPlayClickHandler(item
+								.getChannelId()));
+				return content;
+			}
+
+			private String getStartTimeString(MyProgrammeItem item) {
+				String startTime = (item.getStartTimeInMinutes() / 60) + "";
+				if (startTime.length() == 1)
+					startTime = "0" + startTime;
+				startTime += ":";
+				String minutes = (item.getStartTimeInMinutes() % 60) + "";
+				if (minutes.length() == 1)
+					minutes = "0" + minutes;
+				startTime += minutes;
+				return startTime;
+			}
+
+			private Date getBestStartTime(MyProgrammeItem[] items) {
+				Date bestStartTime = null;
+				for (final MyProgrammeItem item : items) {
+					if (bestStartTime == null
+							|| item.getStart().before(bestStartTime))
+						bestStartTime = item.getStart();
+				}
+				if (bestStartTime == null)
+					bestStartTime = new Date();
+				return bestStartTime;
 			}
 
 		};
