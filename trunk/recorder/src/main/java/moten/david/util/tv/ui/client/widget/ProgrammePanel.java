@@ -35,8 +35,10 @@ public class ProgrammePanel extends VerticalPanel {
 	private final ApplicationServiceAsync applicationService = GWT
 			.create(ApplicationService.class);
 	private final AsyncCallback<MyProgrammeItem[]> getProgrammeCallback;
-	private final FlexTable table;
+	private FlexTable table;
 	private final List<String> channels = new ArrayList<String>();
+	private final long minuteMs = 60000;
+	private FlexTable oldTable;
 
 	public ProgrammePanel() {
 		Application.getInstance().getController().addListener(
@@ -69,7 +71,6 @@ public class ProgrammePanel extends VerticalPanel {
 				try {
 					// each cell is 5 mins wide
 					final int cellWidthMinutes = 5;
-					final long minuteMs = 60000;
 
 					int totalExtraSpan = 0;
 					String lastChannelId = null;
@@ -97,7 +98,8 @@ public class ProgrammePanel extends VerticalPanel {
 							// calculate stop time based on next programme item
 							// start time
 							Date stopTime = item.getStop();
-							if (index < items.length - 1
+							if (false
+									&& index < items.length - 1
 									&& items[index + 1].getChannelId().equals(
 											item.getChannelId()))
 								stopTime = items[index + 1].getStart();
@@ -114,7 +116,7 @@ public class ProgrammePanel extends VerticalPanel {
 									"programmeItem");
 							lastChannelId = item.getChannelId();
 						}
-
+						index++;
 					}
 
 					for (int row = 0; row < table.getRowCount(); row++) {
@@ -130,8 +132,8 @@ public class ProgrammePanel extends VerticalPanel {
 							col++;
 						}
 					}
-					index++;
-
+					remove(oldTable);
+					add(table);
 				} catch (RuntimeException e) {
 					add(new Label(e.toString()));
 				}
@@ -173,9 +175,13 @@ public class ProgrammePanel extends VerticalPanel {
 			private Widget getContent(MyProgrammeItem item) {
 				VerticalPanel content = new VerticalPanel();
 				Label text = new Label();
-				text.setText(item.getDescription());
+				long minutes = (item.getStop().getTime() - item.getStart()
+						.getTime())
+						/ minuteMs;
+				text.setText(item.getDescription() + " " + minutes + "mins");
 				text.setStyleName("itemDescription");
 				content.add(text);
+
 				HorizontalPanel p = new HorizontalPanel();
 				Button play = new Button("Play");
 				play.setStyleName("play");
@@ -287,8 +293,9 @@ public class ProgrammePanel extends VerticalPanel {
 
 	public void refresh() {
 		clear();
-		table.clear();
-		add(table);
+		oldTable = table;
+		table = new FlexTable();
+		table.setStyleName("programme");
 		Date now = new Date();
 		applicationService.getProgramme(channels.toArray(new String[] {}), now,
 				new Date(now.getTime() + 24 * 3600 * 1000),
