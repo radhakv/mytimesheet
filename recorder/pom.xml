@@ -50,6 +50,24 @@
 			<version>${gwt.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+			<scope>runtime</scope>
+		</dependency>
+				<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		
 
 	</dependencies>
 	<build>
@@ -69,7 +87,7 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.10</version>
 				<configuration>
-				<webAppSourceDirectory>${project.build.directory}/recorder</webAppSourceDirectory>
+					<webAppSourceDirectory>${project.build.directory}/recorder</webAppSourceDirectory>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopPort>9966</stopPort>
 					<stopKey>foo</stopKey>

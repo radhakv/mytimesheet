@@ -6,20 +6,15 @@
 
 	<display-name>Tv Recorder</display-name>
 
-	<servlet>
-		<servlet-name>programme</servlet-name>
-		<servlet-class>moten.david.util.tv.servlet.ProgrammeServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>programme</servlet-name>
-		<url-pattern>/programme</url-pattern>
-	</servlet-mapping>
+	<listener>
+		<listener-class>moten.david.util.tv.servlet.SchedulerServletContextListener</listener-class>
+	</listener>
 
 	<servlet>
 		<servlet-name>service</servlet-name>
 		<servlet-class>moten.david.util.tv.ui.server.ApplicationServiceImpl</servlet-class>
 	</servlet>
-	
+
 	<servlet-mapping>
 		<servlet-name>service</servlet-name>
 		<url-pattern>/tv/service</url-pattern>
