@@ -21,6 +21,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -79,8 +80,6 @@
 						</connector>
 					</connectors>
 				</configuration>
-
-
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
