@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,12 +47,7 @@ public class RecorderLinux implements Recorder {
 				+ item.getChannel() + "_" + item.getName() + ".avi";
 		command.add(new File(recordings, filename).getAbsolutePath());
 		command.add("dvb://" + aliasProvider.getAlias(item.getChannel()));
-		ProcessBuilder builder = new ProcessBuilder(command);
-		try {
-			builder.start();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		startProcess(command);
 	}
 
 	@Override
@@ -70,13 +66,21 @@ public class RecorderLinux implements Recorder {
 
 	@Override
 	public void play(String channelId) {
+		stopPlayer();
 		String alias = aliasProvider.getAlias(channelId);
-		File file = new File("src/main/resources/stop-dvb-player.sh");
-		startProcess(file.getAbsolutePath());
 		startProcess("/usr/bin/mplayer", "-quiet", "dvb://" + alias);
 	}
 
-	public void startProcess(String... commandParts) {
+	private void stopPlayer() {
+		File file = new File("src/main/resources/stop-dvb-player.sh");
+		startProcess(file.getAbsolutePath());
+	}
+
+	private void startProcess(Collection<String> commandParts) {
+		startProcess(commandParts.toArray(new String[] {}));
+	}
+
+	private void startProcess(String... commandParts) {
 
 		List<String> command = new ArrayList<String>();
 		for (String commandPart : commandParts)

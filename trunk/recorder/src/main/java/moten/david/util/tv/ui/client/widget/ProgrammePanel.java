@@ -9,6 +9,7 @@ import moten.david.util.tv.ui.client.ApplicationService;
 import moten.david.util.tv.ui.client.ApplicationServiceAsync;
 import moten.david.util.tv.ui.client.MyProgrammeItem;
 import moten.david.util.tv.ui.client.controller.ControllerListener;
+import moten.david.util.tv.ui.client.event.ProgrammeLoaded;
 import moten.david.util.tv.ui.client.event.ShowProgramme;
 
 import com.google.gwt.core.client.GWT;
@@ -64,6 +65,8 @@ public class ProgrammePanel extends VerticalPanel {
 			@Override
 			public void onFailure(Throwable t) {
 				add(new HTML(t.getMessage()));
+				Application.getInstance().getController().event(
+						new ProgrammeLoaded());
 			}
 
 			@Override
@@ -134,6 +137,8 @@ public class ProgrammePanel extends VerticalPanel {
 					}
 					remove(oldTable);
 					add(table);
+					Application.getInstance().getController().event(
+							new ProgrammeLoaded());
 				} catch (RuntimeException e) {
 					add(new Label(e.toString()));
 				}
