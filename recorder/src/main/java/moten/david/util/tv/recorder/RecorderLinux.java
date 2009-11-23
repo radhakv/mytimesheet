@@ -33,35 +33,33 @@ public class RecorderLinux implements Recorder {
 
 	@Override
 	public boolean isRecording(ScheduleItem item) {
-		return false;
+		String output = startProcess("src/main/resources/is-recording.sh",
+				aliasProvider.getAlias(item.getChannel()));
+		return output.trim().length() > 0;
 	}
 
 	@Override
 	public void startRecording(ScheduleItem item) {
-		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmm");
-		List<String> command = new ArrayList<String>();
-		command.add("/usr/bin/mplayer");
-		command.add("-dumpstream");
-		command.add("-dumpfile");
-		String filename = df.format(item.getStartDate()) + "_"
-				+ item.getChannel() + "_" + item.getName() + ".avi";
-		command.add(new File(recordings, filename).getAbsolutePath());
-		command.add("dvb://" + aliasProvider.getAlias(item.getChannel()));
-		startProcess(command);
+		log.info("starting recording for " + item.getName());
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
+		File file = new File("src/main/resources/start-recording.sh");
+		// pass in as parameters to the script
+		// 1. channel alias
+		// 2. tuner no
+		// 3. yyyyMMdd_HHmm date
+		// 4. HHmm duration
+		// 5. title
+		// 6. series no
+		// 7. episode no
+		startProcess(file.getAbsolutePath(), aliasProvider.getAlias(item
+				.getChannel()), "0", dateFormat.format(item.getStartDate()),
+				"00:00", item.getName());
 	}
 
 	@Override
 	public void stopRecording(ScheduleItem item) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public static void main(String[] args) {
-		ScheduleItem item = new ScheduleItem("test", "ABC2", new Date(),
-				new Date());
-		Recorder recorder = ApplicationInjector.getInjector().getInstance(
-				Recorder.class);
-		recorder.startRecording(item);
 	}
 
 	@Override
@@ -80,7 +78,7 @@ public class RecorderLinux implements Recorder {
 		startProcess(commandParts.toArray(new String[] {}));
 	}
 
-	private void startProcess(String... commandParts) {
+	private String startProcess(String... commandParts) {
 
 		List<String> command = new ArrayList<String>();
 		for (String commandPart : commandParts)
@@ -89,9 +87,10 @@ public class RecorderLinux implements Recorder {
 		builder.redirectErrorStream(true);
 		try {
 			Process process = builder.start();
-			new ConsoleWriter(process.getInputStream());
+			ConsoleWriter writer = new ConsoleWriter(process.getInputStream());
 			int resultCode = process.waitFor();
 			log.info("result code = " + resultCode);
+			return writer.getOutput();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
@@ -102,6 +101,9 @@ public class RecorderLinux implements Recorder {
 
 	private static class ConsoleWriter {
 
+		private static final int MAX_BUFFER_SIZE = 100000;
+		private StringBuffer output = new StringBuffer();
+
 		public ConsoleWriter(final InputStream is) {
 			Thread t = new Thread(new Runnable() {
 
@@ -111,8 +113,20 @@ public class RecorderLinux implements Recorder {
 							new InputStreamReader(is));
 					String line;
 					try {
-						while ((line = br.readLine()) != null)
+						while ((line = br.readLine()) != null) {
 							log.info(line);
+							if (output.length() > 0)
+								output.append("\n");
+							output.append(line);
+
+							// output guaranteed only to have the last
+							// MAX_BUFFER_SIZE bytes
+							if (output.length() >= 2 * MAX_BUFFER_SIZE)
+								// reset buffer, too bad if you were interested
+								// in the output!
+								output.replace(0, MAX_BUFFER_SIZE, "");
+							output = new StringBuffer();
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -120,5 +134,17 @@ public class RecorderLinux implements Recorder {
 			});
 			t.start();
 		}
+
+		public String getOutput() {
+			return output.toString();
+		}
+	}
+
+	public static void main(String[] args) {
+		ScheduleItem item = new ScheduleItem("test", "ABC2", new Date(),
+				new Date());
+		Recorder recorder = ApplicationInjector.getInjector().getInstance(
+				Recorder.class);
+		recorder.startRecording(item);
 	}
 }
