@@ -9,6 +9,8 @@ import moten.david.util.tv.recorder.AliasProvider;
 import moten.david.util.tv.recorder.AliasProviderImpl;
 import moten.david.util.tv.recorder.Recorder;
 import moten.david.util.tv.recorder.RecorderLinux;
+import moten.david.util.tv.schedule.Schedule;
+import moten.david.util.tv.schedule.ScheduleSerialized;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
@@ -25,7 +27,7 @@ public class ApplicationInjectorModule extends AbstractModule {
 		bind(Recorder.class).to(RecorderLinux.class).in(Scopes.SINGLETON);
 		bind(AliasProvider.class).to(AliasProviderImpl.class).in(
 				Scopes.SINGLETON);
-
+		bind(Schedule.class).to(ScheduleSerialized.class).in(Scopes.SINGLETON);
 	}
 
 }

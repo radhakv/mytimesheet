@@ -9,13 +9,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import moten.david.util.tv.Configuration;
 
+import com.google.inject.Inject;
+
 public class ScheduleSerialized implements Schedule {
 
+	private static Logger log = Logger.getLogger(ScheduleSerialized.class
+			.getName());
 	private final File scheduleFile;
 
+	@Inject
 	public ScheduleSerialized(Configuration configuration) {
 		scheduleFile = configuration.getScheduleFile();
 	}
@@ -23,14 +29,16 @@ public class ScheduleSerialized implements Schedule {
 	@Override
 	public Set<ScheduleItem> load() {
 		try {
+			log.info("loading schedule from " + scheduleFile);
 			if (!scheduleFile.exists())
 				return new HashSet<ScheduleItem>();
-
-			ObjectInputStream is = new ObjectInputStream(new FileInputStream(
-					scheduleFile));
-			Set<ScheduleItem> set = (Set<ScheduleItem>) is.readObject();
-			is.close();
-			return set;
+			else {
+				ObjectInputStream is = new ObjectInputStream(
+						new FileInputStream(scheduleFile));
+				Set<ScheduleItem> set = (Set<ScheduleItem>) is.readObject();
+				is.close();
+				return set;
+			}
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

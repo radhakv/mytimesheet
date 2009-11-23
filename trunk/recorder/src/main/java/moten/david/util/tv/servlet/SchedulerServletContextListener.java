@@ -24,12 +24,8 @@ public class SchedulerServletContextListener implements ServletContextListener {
 			SchedulerFactory schedulerFactory = new org.quartz.impl.StdSchedulerFactory();
 			scheduler = schedulerFactory.getScheduler();
 			scheduler.start();
-			JobDetail jobDetail = new JobDetail("updaterJob", null,
-					UpdaterJob.class);
-			// run at 04:43 every day
-			Trigger trigger = TriggerUtils.makeDailyTrigger("updaterTrigger",
-					4, 43);
-			scheduler.scheduleJob(jobDetail, trigger);
+			createUpdateJob(scheduler);
+			createRecordJob(scheduler);
 		} catch (RuntimeException e) {
 			log.severe(e.getMessage());
 			throw e;
@@ -37,6 +33,24 @@ public class SchedulerServletContextListener implements ServletContextListener {
 			log.severe(e.getMessage());
 			throw new RuntimeException(e);
 		}
+	}
+
+	private void createRecordJob(Scheduler scheduler) throws SchedulerException {
+		JobDetail jobDetail = new JobDetail("recordJob", null, RecordJob.class);
+		// run every minute
+		Trigger trigger = TriggerUtils.makeMinutelyTrigger();
+		trigger.setName("recordTrigger");
+		scheduler.scheduleJob(jobDetail, trigger);
+	}
+
+	private void createUpdateJob(Scheduler scheduler) throws SchedulerException {
+		JobDetail jobDetail = new JobDetail("updaterJob", null,
+				UpdaterJob.class);
+		// run at 04:43 every day
+		Trigger trigger = TriggerUtils
+				.makeDailyTrigger("updaterTrigger", 4, 43);
+		scheduler.scheduleJob(jobDetail, trigger);
+
 	}
 
 	@Override
